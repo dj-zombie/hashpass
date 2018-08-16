@@ -1,8 +1,9 @@
 # Hashpass Hashcracking Web Application 
 
 ## Build Setup
-install hashcat: https://hashcat.net/hashcat/
-rename sample.env to .env and configure options
+- install hashcat: https://hashcat.net/hashcat/
+- rename sample.env to .env and configure options
+- add some dictionaries to dics/
 ```
 bundle install
 yarn
