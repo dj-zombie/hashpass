@@ -1,23 +1,16 @@
 # Hashpass Hashcracking Web Application 
 
 ## Build Setup
+install hashcat: https://hashcat.net/hashcat/
+rename sample.env to .env and configure options
 ```
 bundle install
 yarn
 ```
 
-## run development
-```
-foreman start
-# for back-end
-# open http://localhost:9292
-# for front-end
-# open http://localhost:8080
-```
-
-## run production
+## Server
 ```
 yarn run build
-APP_ENV=production bundle exec rackup
-# open http://localhost:9292
+APP_ENV=production bundle exec rackup -p 80 --host 0.0.0.0
+# visit localhost in browser
 ```
