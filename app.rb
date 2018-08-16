@@ -19,7 +19,6 @@ require 'openssl'
 require_relative 'src/server/sinatra_ssl'
 require_relative 'src/server/notifications'
 require_relative 'src/server/log_parser.rb'
-require_relative 'src/server/watcher.rb'
 require_relative 'src/server/api.rb'
 
 ##
