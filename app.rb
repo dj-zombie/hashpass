@@ -37,6 +37,11 @@ class History < Sequel::Model(DB[:history])
 end
 
 ##
+# Dictionary model
+class Dics < Sequel::Model(DB[:dictionaries])
+end
+
+##
 # User model
 class User < Sequel::Model
   include BCrypt
@@ -123,6 +128,21 @@ class App < Sinatra::Base
     json api.status
   end
 
+  get '/api/dics' do
+    json DB[:dictionaries].all
+  end
+
+  post '/api/dic' do
+    request.body.rewind
+    json api.insert_dic(JSON.parse(request.body.read))
+  end
+
+  delete '/api/dic/:id' do
+    deleted = Dics.where(id: params['id']).delete
+    json deleted: deleted if deleted
+  end
+
+
   get '/api/hashes' do
     json DB[:hashes].reverse_order(:added).all
   end
@@ -134,9 +154,6 @@ class App < Sinatra::Base
   get '/api/history/:id' do
     history = DB[:history].where(hashid: params['id']).reverse_order(:started_on).all
     json history ? history : 'not found'
-  end
-
-  post '/api/hashes/resume/:id' do
   end
 
   delete '/api/hashes/:id' do

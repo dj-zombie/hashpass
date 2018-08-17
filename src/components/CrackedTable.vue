@@ -2,7 +2,7 @@
   <div class="view-cracked">
     <h2>Cracked</h2>
     <button class="btn btn--small" @click="clear">
-      <span class="oi" data-glyph="ban" title="icon name" aria-hidden="true"></span>
+      <span class="oi" data-glyph="ban" title="clear" aria-hidden="true"></span>
       Clear
     </button>
     <div class="card" v-for="cracked in getCracked">

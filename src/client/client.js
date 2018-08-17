@@ -24,6 +24,16 @@ export default (function(){
     },
     clear_pending: function() { return axios.delete('api/pending') },
 
+    // Dics
+    get_dics: function() { return axios.get('/api/dics') },
+    delete_dic: function(id) { return axios.delete('/api/dic/' + id) },
+    insert_dic: function(name, location) {
+      return axios.post('/api/dic', {
+        name: name,
+        location: location
+        })
+    },
+
     // Hashes
     insert_hash: function(name, hash, hashmode, hashstring, latitude, longitude) {
       return axios.post('/api/hashes/insert', {

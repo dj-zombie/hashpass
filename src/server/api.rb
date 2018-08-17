@@ -68,7 +68,7 @@ class API
       flags2: "-w 3 --status --status-timer=1 --session #{ time_now } --potfile-disable",
       rules: !active[:rules].nil? ? "#{rules.join(',').delete(',')}" : '',
       hash:  !active[:hashstring].empty? ? "#{active[:hashstring]}" : "hashes/#{active[:hash]}",
-      dics: active[:dictionary].empty? && active[:dictionary2].empty? ? "" : active[:dictionary2].empty? ? "dics/#{active[:dictionary]}" : "dics/#{active[:dictionary]} dics/#{active[:dictionary2]}",
+      dics: active[:dictionary].empty? && active[:dictionary2].empty? ? "" : active[:dictionary2].empty? ? "#{active[:dictionary]}" : "#{active[:dictionary]} #{active[:dictionary2]}",
       cracked: "cracked/#{active[:hash]}#{active[:hashstring]}.crack",
       logs: !active[:hashstring].empty? ? "logs/#{active[:hashstring]}" : "logs/#{active[:hash]}"
     }
@@ -260,6 +260,15 @@ class API
       latitude: latitude, longitude: longitude, added: Time.now.iso8601)
     hash.save
     p hash
+  end
+
+  def insert_dic(param)
+    name =        param['name'] || ''
+    location =    param['location'] || ''
+    size =        0
+
+    dic = Dics.new(name: name, location: location, size: size)
+    dic.save
   end
 
   def new_cracked

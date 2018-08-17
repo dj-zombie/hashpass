@@ -4,6 +4,7 @@ import MainPage from '../pages/MainPage.vue'
 import ErrorPage from '../pages/ErrorPage.vue'
 import QueuePage from '../pages/QueuePage.vue'
 import HashesPage from '../pages/HashesPage.vue'
+import SettingsPage from '../pages/SettingsPage.vue'
 
 Vue.use(Router);
 
@@ -24,6 +25,11 @@ export default new Router({
       path: '/queue',
       name: 'queue',
       component: QueuePage
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsPage
     },
     {
       path: '*',

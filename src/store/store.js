@@ -9,6 +9,7 @@ const state = {
   hashes: [],
   cracked: [],
   history: [],
+  dics: [],
   item: {
     name: '',
     dictionary: '',
@@ -72,9 +73,6 @@ const actions = {
     let _this = this
     client.get_pending()
       .then(function(response){
-        console.log('context.getters.getPending', context.getters.getPending)
-        console.log('pending..', response.data.pending)
-        console.log('equal?', isEqual(context.getters.getPending, response.data.pending))
         if (!isEqual(context.getters.getPending, response.data.pending)) {
           _this.commit('load_items', response.data)
         }
@@ -92,6 +90,35 @@ const actions = {
   insert_hash(context, params) {
     return client.insert_hash(params.name, params.hash, params.hashmode, params.hashstring,
       params.latitude, params.longitude)
+  },
+
+  
+
+  insert_dic(context, params) {
+    return client.insert_dic(params.name, params.location)
+  },
+
+  get_dics(context, params) {
+    let _this = this
+    client.get_dics()
+      .then(function(response){
+        console.log('got dics', response)
+        _this.commit('get_dics', response.data)
+      })
+      .catch(function(error) {
+        console.error('error in get_dics', error)
+      })
+  },
+
+  delete_dic(context, id) {
+    console.log('deleting dic', id);
+    client.delete_dic(id)
+      .then(function(response) {
+        console.log('deleted', response)
+      })
+      .catch(function(error) {
+        console.error('error in load_pid_active', error)
+      })
   },
 
   login(context, params) {
@@ -264,6 +291,7 @@ const actions = {
 const mutations = {
   load_pid_active (context, data) { context.pidActive = data.pid },
   get_progress (context, data) { context.progress = data },
+  get_dics (context, data) { context.dics = data },
   load_items (context, data) { context.items = data.pending },
   load_running (context, data) { context.running = data.running || ''; },
   load_cracked (context, data) { context.cracked = data.cracked || ''; },
@@ -289,6 +317,7 @@ const mutations = {
 
 const getters = {
   getHashes (state){ return state.hashes },
+  getDics (state){ return state.dics },
   getHistory (state){ return state.history },
   getItem (state){ return state.item },
   getItems (state){ return state.items },

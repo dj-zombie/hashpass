@@ -29,20 +29,7 @@
       <div class="field">
         <select id="dictionary" name="dictionary" v-model="getItem.dictionary">
           <option value="" selected disabled hidden>Select Dictionary</option>
-          <option value="rockyou.txt">RockYou 140MB</option>
-          <option value="Rocktastic12a.txt">Rocktastic12a</option>
-          <option value="Custom-WPA.txt">Custom WPA</option>
-          <option value="18_in_1.lst">1.8 Billion Leak</option>
-          <option value="Top1pt8Billion-WPA-probable-v2.txt">Top1pt8Billion WPA-probable v2</option>
-          <option value="Top1pt2Million-WPA-probable-v2.txt">Top1pt2Million-WPA-probable-v2</option>
-          <option value="MainEnglishDictionary_ProbWL.txt">MainEnglishDictionary_ProbWL</option>
-          <option value="HashesOrg.txt">HashesOrg</option>
-          <option value="crackstation.txt">crackstation</option>
-          <option value="WoNDeR.txt">WoNDeR 98MB</option>
-          <option value="weakpass_2a.txt">Weakpass 30GB</option>
-          <option value="weakpass_2_wifi.txt">Weakpass WIFI 28GB</option>
-          <option value="google-10000-english-no-swears.txt">Google top 10k no swears</option>
-          <option value="google-10000-english-usa.txt">Google top 10k usa</option>
+          <option v-for="dic in getDics" :value="dic.location">{{dic.name}}</option>
         </select>
       </div>
     </div>
@@ -53,20 +40,7 @@
       <div class="field">
         <select id="dictionary2" name="dictionary2" v-model="getItem.dictionary2">
           <option value="" selected disabled hidden>Select Dictionary</option>
-          <option value="rockyou.txt">RockYou 140MB</option>
-          <option value="Rocktastic12a.txt">Rocktastic12a</option>
-          <option value="Custom-WPA.txt">Custom WPA</option>
-          <option value="18_in_1.lst">1.8 Billion Leak</option>
-          <option value="Top1pt8Billion-WPA-probable-v2.txt">Top1pt8Billion WPA-probable v2</option>
-          <option value="Top1pt2Million-WPA-probable-v2.txt">Top1pt2Million-WPA-probable-v2</option>
-          <option value="MainEnglishDictionary_ProbWL.txt">MainEnglishDictionary_ProbWL</option>
-          <option value="HashesOrg.txt">HashesOrg</option>
-          <option value="crackstation.txt">crackstation</option>
-          <option value="WoNDeR.txt">WoNDeR 98MB</option>
-          <option value="weakpass_2a.txt">Weakpass 30GB</option>
-          <option value="weakpass_2_wifi.txt">Weakpass WIFI 28GB</option>
-          <option value="google-10000-english-no-swears.txt">Google top 10k no swears</option>
-          <option value="google-10000-english-usa.txt">Google top 10k usa</option>
+          <option v-for="dic in getDics" :value="dic.location">{{dic.name}}</option>
         </select>
       </div>
     </div>
@@ -163,9 +137,11 @@
       };
     },
     computed: {
-      getItem: function(){
-        return store.getters.getItem
-      }
+      getItem: function(){ return store.getters.getItem },
+      getDics: function() { return store.getters.getDics }
+    },
+    mounted() {
+      store.dispatch('get_dics')
     },
     methods: {
       checkform() {

@@ -2,11 +2,22 @@
   <div id='app' class="flex1">
     <div class="navbar">
       <h1><span class="oi mr2" data-glyph="lock-unlocked" title="icon name" aria-hidden="true"></span>Hashpass</h1>
-      <ul>
-        <router-link to="/"><li>Dashboard</li></router-link>
-        <router-link to="hashes"><li>Hashes</li></router-link>
-        <router-link to="queue"><li>Queue</li></router-link>
-        <a href="/"><li>Logout</li></a>
+      <ul>        
+        <router-link to="/">
+          <span class="oi" data-glyph="target" title="dashboard" aria-hidden="true"></span>
+        </router-link>
+        <router-link to="hashes">
+          <span class="oi" data-glyph="key" title="hashes" aria-hidden="true"></span>
+        </router-link>
+        <router-link to="queue">
+          <span class="oi" data-glyph="list" title="queue" aria-hidden="true"></span>
+        </router-link>
+        <router-link to="/settings">
+          <span class="oi" data-glyph="cog" aria-hidden="true"></span>
+        </router-link>
+        <a href="/">
+          <span class="oi" data-glyph="account-logout" title="logout" aria-hidden="true"></span>
+        </a>        
       </ul>
     </div>
     <div class="view-main">

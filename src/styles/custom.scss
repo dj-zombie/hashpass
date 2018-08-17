@@ -50,7 +50,12 @@ textarea {
 .text-center { text-align: center; }
 .text-right { text-align: right; }
 .text-left { text-align: left; }
-.error { color: $color-red; }
+.error { color: $color-red; li { display: block; }}
+.info { 
+  color: $color-secondary;
+  li { display: block; margin: 5px; padding: 5px; }
+ }
+.success { color: $color-primary; }
 .text-primary { color: $color-primary; }
 .text-secondary { color: $color-secondary; }
 .text-highlight { color: $color-highlight; }
@@ -68,6 +73,9 @@ textarea {
 .mt3 { margin-top: 1rem !important; }
 .mt4 { margin-top: 3rem !important; }
 .mt5 { margin-top: 5rem !important; }
+.mb0 { margin-bottom: 0 !important; }
+.mb1 { margin-bottom: 0.5rem !important; }
+.mb2 { margin-bottom: 1rem !important; }
 .mr1 { margin-right: -2rem !important; }
 .mr2 { margin-right: 1rem !important; }
 .mr3 { margin-right: 2rem !important; }
@@ -77,6 +85,7 @@ textarea {
 
 .fr { float: right; }
 .fl { float: left; }
+.bl { border-left: 1px solid #555; }
 .btn {
   background-color: #333;
   color: $text-color;
@@ -128,6 +137,7 @@ input[type="button"]{
 input[type="button"]::-moz-focus-inner {
    border: 0;
 }
+
 
 .view-hashes {
   padding: 1rem;
@@ -252,6 +262,7 @@ ul {
 		text-shadow: 1px 1px 1px #000;
 		display: inline-block;
 		margin-right: 1rem;
+    flex:1;
 		color: $color-primary;
     @media screen and (max-width: $mobile-view) {
       display: none;
@@ -262,8 +273,18 @@ ul {
 		display: flex;
 		margin: 0;
 		padding: 0;
-		position: absolute;
-		right: 1rem;
+		// position: absolute;
+		// right: 1rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-self: center;
+    .oi {
+      margin-right: 1.5rem;
+      opacity: 0.5;
+    }
+    .oi:hover {
+      opacity: 1;
+    }
 		li {
 			display: flex;
 			margin-left: 1.5rem;
@@ -398,7 +419,7 @@ select,
 input[type="text"],
 input[type="password"],
 input[type="email"] {
-  padding: 0.8rem;
+  padding: 0.666rem;
   background: #111;
   border: 1px solid #333;
   color: #eee;
@@ -414,6 +435,9 @@ input[type="radio"],
 input[type="checkbox"],
 input[type="submit"]{
   width: auto;
+}
+input[type="checkbox"] {
+  transform: scale(1.3);
 }
 
 @media (max-width: 720px) {
