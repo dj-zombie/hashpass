@@ -265,10 +265,18 @@ class API
   def insert_dic(param)
     name =        param['name'] || ''
     location =    param['location'] || ''
-    size =        0
+    size =        '%.2f' % (File.size(param['location']).to_f / 2**20)
 
     dic = Dics.new(name: name, location: location, size: size)
     dic.save
+  end
+
+  def insert_rule(param)
+    name =        param['name'] || ''
+    location =    param['location'] || ''
+
+    rule = Rules.new(name: name, location: location)
+    rule.save
   end
 
   def new_cracked

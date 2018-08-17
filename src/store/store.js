@@ -10,6 +10,7 @@ const state = {
   cracked: [],
   history: [],
   dics: [],
+  rules: [],
   item: {
     name: '',
     dictionary: '',
@@ -120,6 +121,36 @@ const actions = {
         console.error('error in load_pid_active', error)
       })
   },
+
+
+
+  insert_rule(context, params) {
+    return client.insert_rule(params.name, params.location)
+  },
+
+  get_rules(context, params) {
+    let _this = this
+    client.get_rules()
+      .then(function(response){
+        console.log('got rules', response)
+        _this.commit('get_rules', response.data)
+      })
+      .catch(function(error) {
+        console.error('error in get_rules', error)
+      })
+  },
+
+  delete_rule(context, id) {
+    console.log('deleting rule', id);
+    client.delete_rule(id)
+      .then(function(response) {
+        console.log('deleted', response)
+      })
+      .catch(function(error) {
+        console.error('error in delete_rule', error)
+      })
+  },
+
 
   login(context, params) {
     return client.login(params.handle, params.password)
@@ -292,6 +323,7 @@ const mutations = {
   load_pid_active (context, data) { context.pidActive = data.pid },
   get_progress (context, data) { context.progress = data },
   get_dics (context, data) { context.dics = data },
+  get_rules (context, data) { context.rules = data },
   load_items (context, data) { context.items = data.pending },
   load_running (context, data) { context.running = data.running || ''; },
   load_cracked (context, data) { context.cracked = data.cracked || ''; },
@@ -318,6 +350,7 @@ const mutations = {
 const getters = {
   getHashes (state){ return state.hashes },
   getDics (state){ return state.dics },
+  getRules (state){ return state.rules },
   getHistory (state){ return state.history },
   getItem (state){ return state.item },
   getItems (state){ return state.items },

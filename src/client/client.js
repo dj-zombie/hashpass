@@ -34,6 +34,16 @@ export default (function(){
         })
     },
 
+    // Rules
+    get_rules: function() { return axios.get('/api/rules') },
+    delete_rule: function(id) { return axios.delete('/api/rule/' + id) },
+    insert_rule: function(name, location) {
+      return axios.post('/api/rule', {
+        name: name,
+        location: location
+        })
+    },
+
     // Hashes
     insert_hash: function(name, hash, hashmode, hashstring, latitude, longitude) {
       return axios.post('/api/hashes/insert', {

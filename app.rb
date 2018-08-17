@@ -42,6 +42,11 @@ class Dics < Sequel::Model(DB[:dictionaries])
 end
 
 ##
+# Rules model
+class Rules < Sequel::Model(DB[:rules])
+end
+
+##
 # User model
 class User < Sequel::Model
   include BCrypt
@@ -139,6 +144,21 @@ class App < Sinatra::Base
 
   delete '/api/dic/:id' do
     deleted = Dics.where(id: params['id']).delete
+    json deleted: deleted if deleted
+  end
+
+
+  get '/api/rules' do
+    json DB[:rules].all
+  end
+
+  post '/api/rule' do
+    request.body.rewind
+    json api.insert_rule(JSON.parse(request.body.read))
+  end
+
+  delete '/api/rule/:id' do
+    deleted = Rules.where(id: params['id']).delete
     json deleted: deleted if deleted
   end
 
