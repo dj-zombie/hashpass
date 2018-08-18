@@ -134,7 +134,7 @@ class App < Sinatra::Base
   end
 
   get '/api/dics' do
-    json DB[:dictionaries].all
+    json DB[:dictionaries].reverse_order(:size).all
   end
 
   post '/api/dic' do
@@ -159,6 +159,23 @@ class App < Sinatra::Base
 
   delete '/api/rule/:id' do
     deleted = Rules.where(id: params['id']).delete
+    json deleted: deleted if deleted
+  end
+
+
+  get '/api/users' do
+    json DB[:users].all
+  end
+
+  post '/api/user' do
+    request.body.rewind
+    param = JSON.parse(request.body.read)
+    @new_user = User.new(email: param['name'], password: param['password'], role: param['role'])
+    json @new_user.save
+  end
+
+  delete '/api/user/:id' do
+    deleted = User.where(id: params['id']).delete
     json deleted: deleted if deleted
   end
 

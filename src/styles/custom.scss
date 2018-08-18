@@ -82,10 +82,14 @@ textarea {
 .ml1 { margin-left: -2rem !important; }
 .ml2 { margin-left: 1rem !important; }
 .ml3 { margin-left: 2rem !important; }
-
 .fr { float: right; }
 .fl { float: left; }
 .bl { border-left: 1px solid #555; }
+.max600 { 
+  max-width: 600px; 
+  border-left: 1px solid #1a1a1a;
+  border-right: 1px solid #1a1a1a;
+}
 .btn {
   background-color: #333;
   color: $text-color;

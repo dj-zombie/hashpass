@@ -49,9 +49,9 @@ class API
       sleep 3
     end
 
-    rules = active[:rules].delete(' ').split(',').map do |rule|
-      " -r /usr/share/hashcat/rules/#{rule}.rule"
-    end
+    # rules = active[:rules].delete(' ').split(',').map do |rule|
+    #   " -r /usr/share/hashcat/rules/#{rule}.rule"
+    # end
 
     hashname = 
       if active[:hashstring].empty? 
@@ -66,7 +66,7 @@ class API
     options = {
       flags: active[:dictionary2].empty? && active[:rules].empty? && active[:mask].empty? ? '-a 0' : active[:rules].empty? && active[:mask].empty? ? '-a 1' : active[:rules].empty? ? '-a 3' : '-a 0',
       flags2: "-w 3 --status --status-timer=1 --session #{ time_now } --potfile-disable",
-      rules: !active[:rules].nil? ? "#{rules.join(',').delete(',')}" : '',
+      rules: !active[:rules].nil? ? "-r #{active[:rules]}" : '',  # "#{rules.join(',').delete(',')}" : '',
       hash:  !active[:hashstring].empty? ? "#{active[:hashstring]}" : "hashes/#{active[:hash]}",
       dics: active[:dictionary].empty? && active[:dictionary2].empty? ? "" : active[:dictionary2].empty? ? "#{active[:dictionary]}" : "#{active[:dictionary]} #{active[:dictionary2]}",
       cracked: "cracked/#{active[:hash]}#{active[:hashstring]}.crack",

@@ -11,6 +11,7 @@ const state = {
   history: [],
   dics: [],
   rules: [],
+  users: [],
   item: {
     name: '',
     dictionary: '',
@@ -103,7 +104,6 @@ const actions = {
     let _this = this
     client.get_dics()
       .then(function(response){
-        console.log('got dics', response)
         _this.commit('get_dics', response.data)
       })
       .catch(function(error) {
@@ -132,7 +132,6 @@ const actions = {
     let _this = this
     client.get_rules()
       .then(function(response){
-        console.log('got rules', response)
         _this.commit('get_rules', response.data)
       })
       .catch(function(error) {
@@ -141,8 +140,31 @@ const actions = {
   },
 
   delete_rule(context, id) {
-    console.log('deleting rule', id);
     client.delete_rule(id)
+      .then(function(response) {
+        console.log('deleted', response)
+      })
+      .catch(function(error) {
+        console.error('error in delete_rule', error)
+      })
+  },
+
+
+  insert_user(context, params) {
+    return client.insert_user(params.name, params.password, params.role)
+  },
+  get_users(context, params) {
+    let _this = this
+    client.get_users()
+      .then(function(response){
+        _this.commit('get_users', response.data)
+      })
+      .catch(function(error) {
+        console.error('error in get_users', error)
+      })
+  },
+  delete_user(context, id) {
+    client.delete_user(id)
       .then(function(response) {
         console.log('deleted', response)
       })
@@ -324,6 +346,7 @@ const mutations = {
   get_progress (context, data) { context.progress = data },
   get_dics (context, data) { context.dics = data },
   get_rules (context, data) { context.rules = data },
+  get_users (context, data) { context.users = data },
   load_items (context, data) { context.items = data.pending },
   load_running (context, data) { context.running = data.running || ''; },
   load_cracked (context, data) { context.cracked = data.cracked || ''; },
@@ -340,8 +363,6 @@ const mutations = {
   hide_modal(context) { context.showModal = false; },
   stop(context) { context.isRunning = false; },
   start(context, data) {
-    console.log('start', data);
-    // context.cmd = data.cmd;
     context.pid = data.pid;
     context.isRunning = true;
   }
@@ -350,6 +371,7 @@ const mutations = {
 const getters = {
   getHashes (state){ return state.hashes },
   getDics (state){ return state.dics },
+  getUsers (state){ return state.users },
   getRules (state){ return state.rules },
   getHistory (state){ return state.history },
   getItem (state){ return state.item },

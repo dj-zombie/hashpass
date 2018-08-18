@@ -9,16 +9,16 @@
         <router-link to="hashes">
           <span class="oi" data-glyph="key" title="hashes" aria-hidden="true"></span>
         </router-link>
-        <router-link to="queue">
+        <!-- <router-link to="queue">
           <span class="oi" data-glyph="list" title="queue" aria-hidden="true"></span>
-        </router-link>
+        </router-link> -->
         <router-link to="/settings">
           <span class="oi" data-glyph="cog" aria-hidden="true"></span>
         </router-link>
-        <a href="/">
+        <!-- <a href="/">
           <span class="oi" data-glyph="account-logout" title="logout" aria-hidden="true"></span>
         </a>        
-      </ul>
+      </ul> -->
     </div>
     <div class="view-main">
       <router-view></router-view>

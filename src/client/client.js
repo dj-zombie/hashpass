@@ -44,6 +44,17 @@ export default (function(){
         })
     },
 
+    // Users
+    get_users: function() { return axios.get('/api/users') },
+    delete_user: function(id) { return axios.delete('/api/user/' + id) },
+    insert_user: function(name, password, role) {
+      return axios.post('/api/user', {
+        name: name,
+        password: password,
+        role: role
+        })
+    },
+
     // Hashes
     insert_hash: function(name, hash, hashmode, hashstring, latitude, longitude) {
       return axios.post('/api/hashes/insert', {

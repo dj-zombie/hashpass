@@ -51,20 +51,9 @@
       <div class="field">
         <select id="rules" name="rules" v-model="getItem.rules">
           <option value="" selected disabled hidden>Select Rules</option>
-          <option value="hybrid/append_d">Append Number</option>
-          <option value="hybrid/append_ds">Append Number + Symbol</option>
-          <option value="hybrid/append_s">Append Symbol</option>
-          <option value="hybrid/prepend_s">Prepend Symbol</option>
-          <option value="hybrid/prepend_n">Prepend Number</option>
-          <option value="best">Best</option>
-          <option value="best64">Best 64</option>
-          <option value="d3ad0ne">d3ad0ne</option>
-          <option value="d3adhob0">d3adhob0</option>
-          <option value="zombie">zombie</option>
-          <option value="leetspeek">leetspeek</option>
-          <option value="rockyou-30000">rockyou-30000</option>
-          <option value="T0XlC">T0XlC</option>
-          <option value="OneRuleToRuleThemAll">OneRuleToRuleThemAll</option>
+          <option v-for="rule in getRules" :value="rule.location">{{rule.name}}</option>
+          <!--<option value="d3adhob0">d3adhob0</option>
+          <option value="OneRuleToRuleThemAll">OneRuleToRuleThemAll</option> -->
         </select>
       </div>
     </div>
@@ -138,10 +127,12 @@
     },
     computed: {
       getItem: function(){ return store.getters.getItem },
-      getDics: function() { return store.getters.getDics }
+      getDics: function() { return store.getters.getDics },
+      getRules: function() { return store.getters.getRules }
     },
     mounted() {
-      store.dispatch('get_dics')
+      store.dispatch('get_dics'),
+      store.dispatch('get_rules')
     },
     methods: {
       checkform() {
