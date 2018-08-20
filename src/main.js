@@ -37,7 +37,8 @@ Vue.config.silent        = process.env.NODE_ENV != 'development'
 //
 // Vue Router
 //
-import router from './routes/router'
+// import router from './routes/router'
+import { router } from './routes/router'
 import {sync} from 'vuex-router-sync'
 sync(store, router);
 
@@ -54,7 +55,9 @@ document.vueApp = new Vue({
   render: function(h){ return h(App);}
 });
 
-document.loginApp = new Vue({
-  el: '#loginapp',
-  render: function(h){ return h(Login);}
-});
+window.Vue = Vue;
+
+// document.loginApp = new Vue({
+//   el: '#loginapp',
+//   render: function(h){ return h(Login);}
+// });

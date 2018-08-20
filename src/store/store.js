@@ -12,6 +12,7 @@ const state = {
   dics: [],
   rules: [],
   users: [],
+  token: '',
   item: {
     name: '',
     dictionary: '',
@@ -175,7 +176,22 @@ const actions = {
 
 
   login(context, params) {
-    return client.login(params.handle, params.password)
+    let _this = this
+    client.login(params.handle, params.password)
+      .then(function(response){
+        if (response.data && response.data.token) {
+          localStorage.setItem('user', JSON.stringify(response.data))
+          context.token = response.data;
+          _this.commit('login', response.data,)
+        }
+      })
+      .catch(function(error) {
+        console.error('error in login', error)
+      })
+  },
+  logout(context) {
+    localStorage.removeItem('user')
+    context.token = ''
   },
 
   promote_next(context) {
@@ -323,8 +339,6 @@ const actions = {
     let _this = this
     client.delete_hash(id)
       .then(function(response) {
-        console.log('response', response)
-        // _this.commit('load_pid_active', response.data)
       })
       .catch(function(error) {
         console.error('error in load_pid_active', error)
@@ -342,6 +356,13 @@ const actions = {
 };
 
 const mutations = {
+  login (context, data) { 
+    if (data.token) {
+      context.token = data
+      localStorage.setItem('user', JSON.stringify(data))
+    }
+  },
+  clear_token(context) { context.token = '' },
   load_pid_active (context, data) { context.pidActive = data.pid },
   get_progress (context, data) { context.progress = data },
   get_dics (context, data) { context.dics = data },
@@ -369,6 +390,7 @@ const mutations = {
 };
 
 const getters = {
+  getToken (state){ return state.token },
   getHashes (state){ return state.hashes },
   getDics (state){ return state.dics },
   getUsers (state){ return state.users },

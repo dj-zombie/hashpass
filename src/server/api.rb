@@ -49,19 +49,12 @@ class API
       sleep 3
     end
 
-    # rules = active[:rules].delete(' ').split(',').map do |rule|
-    #   " -r /usr/share/hashcat/rules/#{rule}.rule"
-    # end
-
     hashname = 
       if active[:hashstring].empty? 
         "--#{ active[:hash] }"
       else
         "--#{ active[:hashstring] }"
       end
-
-    puts "Hashstring: #{active[:hashstring]}"
-    puts !active[:hashstring].empty? ? "#{active[:hashstring]}" : "hashes/#{active[:hash]}"
 
     options = {
       flags: active[:dictionary2].empty? && active[:rules].empty? && active[:mask].empty? ? '-a 0' : active[:rules].empty? && active[:mask].empty? ? '-a 1' : active[:rules].empty? ? '-a 3' : '-a 0',

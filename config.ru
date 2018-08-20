@@ -1,3 +1,7 @@
 require './app'
 
-run App
+run Rack::URLMap.new({
+  '/' => Public,
+  '/api' => Api
+})
+# run App

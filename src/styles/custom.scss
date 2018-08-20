@@ -142,6 +142,19 @@ input[type="button"]::-moz-focus-inner {
    border: 0;
 }
 
+#app {
+  display: flex;
+  flex-direction: column;
+}
+.login-page {
+  display: flex;
+  flex: 1;
+  align-self: center;
+  margin-top: 13.37%;
+  & .view-main {
+    display: flex;
+  }
+}
 
 .view-hashes {
   padding: 1rem;
@@ -277,8 +290,6 @@ ul {
 		display: flex;
 		margin: 0;
 		padding: 0;
-		// position: absolute;
-		// right: 1rem;
     font-size: 1.5rem;
     display: flex;
     align-self: center;

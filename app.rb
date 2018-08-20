@@ -16,6 +16,7 @@ require 'listen'
 require 'dotenv/load'
 require 'bcrypt'
 require 'openssl'
+require 'jwt'
 require_relative 'src/server/sinatra_ssl'
 require_relative 'src/server/notifications'
 require_relative 'src/server/log_parser.rb'
@@ -63,13 +64,108 @@ end
 
 
 ##
-# app
-class App < Sinatra::Base
+# Public (user not authorized)
+class Public < Sinatra::Base
+  def initialize
+    super
+  end
+
+  not_found do
+    File.read(File.join('public', 'app.html'))
+  end
+
+  get '/' do
+    File.read(File.join('public', 'app.html'))
+  end
+
+  post '/hplogin' do
+    request.body.rewind
+    params = JSON.parse(request.body.read)
+    @user = User.first(email: params['handle'])
+    redirect to '/' if @user.nil? || params['handle'].empty?
+
+    if @user.password == params['password']
+      hmac_secret = 'my$ecretK3y'
+      payload = { 
+        exp: Time.now.to_i + 60 * 60,
+        iat: Time.now.to_i,
+        iss: 'z0mbieee',
+        scopes: ['add_money', 'remove_money', 'view_money', 'dashboard'],
+        user: {
+          username: @user
+        }
+      }
+      token = JWT.encode(payload, hmac_secret, 'HS256')
+      decoded_token = JWT.decode token, hmac_secret, true, { algorithm: 'HS256' }
+
+      { token: token(@user.email) }.to_json
+    else
+      halt 401
+    end
+  end
+
+  def payload(username)
+    {
+      exp: Time.now.to_i + 60 * 60,
+      iat: Time.now.to_i,
+      iss: 'z0mbieee',
+      scopes: ['add_money', 'remove_money', 'view_money', 'dashboard'],
+      user: {
+        username: username
+      }
+    }
+  end
+
+  def token(username)
+    JWT.encode(payload(username), 's3cret', 'HS256')
+  end
+end
+
+##
+# JWT
+class JwtAuth
+  def initialize app
+    @app = app
+  end
+
+  def call env
+    begin
+      options = { algorithm: 'HS256', iss: 'z0mbieee' }
+      bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
+      payload, header = JWT.decode bearer, 's3cret', true, options
+
+      env[:scopes] = payload['scopes']
+      env[:user] = payload['user']
+
+      @app.call env
+    rescue JWT::DecodeError
+      puts "pass a token!"
+      [401, { 'Content-Type' => 'text/plain' }, ['A token must be passed.']]
+    rescue JWT::ExpiredSignature
+      [403, { 'Content-Type' => 'text/plain' }, ['The token has expired.']]
+    rescue JWT::InvalidIssuerError
+      [403, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid issuer.']]
+    rescue JWT::InvalidIatError
+      [403, { 'Content-Type' => 'text/plain' }, ['The token does not have a valid "issued at" time.']]
+    end
+  end
+
+end
+
+##
+# API
+class Api < Sinatra::Base
+  use JwtAuth
+
   register Sinatra::Namespace
   enable :sessions
   helpers Sinatra::Cookies
   api = API.new
   notifications = Notifications.new
+
+  def initialize
+    super
+  end
 
   configure :development do
     register Sinatra::Reloader
@@ -79,37 +175,17 @@ class App < Sinatra::Base
     api.main_page
   end
 
-  def create_user(user, password)
-    @new_user = User.new(email: user, password: password)
-    @new_user.save
-  end
-
-  get '/' do
-    api.login_page
-  end
-
-  post '/' do
-    @user = User.first(email: params['handle'])
-    redirect to '/' if @user.nil? || params['handle'].empty?
-
-    if @user.password == params['password']
-      api.main_page
-    else
-      redirect to '/'
-    end
-  end
-
-  get '/api/mail' do
+  get '/mail' do
     notifications.mail
     json done: true
   end
 
-  get '/api/clean' do
+  get '/clean' do
     api.clean
     json done: true
   end
 
-  get '/api/start' do
+  get '/start' do
     pending = DB[:pending].first
     active = DB[:active].first
     if active.nil? && pending
@@ -119,91 +195,92 @@ class App < Sinatra::Base
     json pid: api.start(active)
   end
 
-  get '/api/stop/:id' do
+  get '/stop/:id' do
     api.stop
     json killed: true
   end
 
-  post '/api/upload' do
+  post '/upload' do
     api.upload(params[:files])
     json success: true
   end
 
-  get '/api/status' do
+  get '/status' do
     json api.status
   end
 
-  get '/api/dics' do
+  get '/dics' do
+    puts "dics"
     json DB[:dictionaries].reverse_order(:size).all
   end
 
-  post '/api/dic' do
+  post '/dic' do
     request.body.rewind
     json api.insert_dic(JSON.parse(request.body.read))
   end
 
-  delete '/api/dic/:id' do
+  delete '/dic/:id' do
     deleted = Dics.where(id: params['id']).delete
     json deleted: deleted if deleted
   end
 
 
-  get '/api/rules' do
+  get '/rules' do
     json DB[:rules].all
   end
 
-  post '/api/rule' do
+  post '/rule' do
     request.body.rewind
     json api.insert_rule(JSON.parse(request.body.read))
   end
 
-  delete '/api/rule/:id' do
+  delete '/rule/:id' do
     deleted = Rules.where(id: params['id']).delete
     json deleted: deleted if deleted
   end
 
 
-  get '/api/users' do
+  get '/users' do
     json DB[:users].all
   end
 
-  post '/api/user' do
+  post '/user' do
     request.body.rewind
     param = JSON.parse(request.body.read)
     @new_user = User.new(email: param['name'], password: param['password'], role: param['role'])
     json @new_user.save
   end
 
-  delete '/api/user/:id' do
+  delete '/user/:id' do
     deleted = User.where(id: params['id']).delete
     json deleted: deleted if deleted
   end
 
 
-  get '/api/hashes' do
+  get '/hashes' do
     json DB[:hashes].reverse_order(:added).all
   end
 
-  get '/api/history' do
+  get '/history' do
     json DB[:history].reverse_order(:started_on).all
   end
 
-  get '/api/history/:id' do
+  get '/history/:id' do
     history = DB[:history].where(hashid: params['id']).reverse_order(:started_on).all
     json history ? history : 'not found'
   end
 
-  delete '/api/hashes/:id' do
+  delete '/hashes/:id' do
     deleted = Hashes.where(id: params['id']).delete
     json deleted: deleted if deleted
   end
 
-  post '/api/hashes/insert' do
+  post '/hashes/insert' do
     request.body.rewind
     json success: true if api.insert_hash(JSON.parse(request.body.read))
   end
 
-  namespace '/api/running' do
+  namespace '/running' do
     get do
       status 204 if DB[:active].all.empty?
       json running: DB[:active].all
@@ -222,7 +299,7 @@ class App < Sinatra::Base
     end
   end
 
-  namespace '/api/pending' do
+  namespace '/pending' do
     get do
       json pending: DB[:pending].all
     end
@@ -238,7 +315,7 @@ class App < Sinatra::Base
     end
   end
 
-  namespace '/api/cracked' do
+  namespace '/cracked' do
     get do
       json cracked: DB[:cracked].all
     end

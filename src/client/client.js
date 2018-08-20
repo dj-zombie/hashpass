@@ -1,5 +1,14 @@
 import axios from 'axios'
 
+
+axios.interceptors.request.use(request => {
+  const token = JSON.parse(localStorage.getItem('user'))
+  if (token) {
+    request.headers.common['Authorization'] = `Bearer ${token.token}`
+  }
+  return request
+})
+
 export default (function(){
   return{
     // Start/Stop
@@ -90,7 +99,7 @@ export default (function(){
 
     // Authorization
     login: function(handle, password) {
-      return axios.post('/login', {
+      return axios.post('/hplogin', {
         handle: handle,
         password: password
       })

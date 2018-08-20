@@ -177,15 +177,15 @@
     },
     mounted() {
       let vm = this;
-      store.dispatch('get_running')
-      store.dispatch('get_progress')
-      store.dispatch('get_cracked')
-      store.dispatch('get_pending')
+      // store.dispatch('get_running')
+      // store.dispatch('get_progress')
+      // store.dispatch('get_cracked')
+      // store.dispatch('get_pending')
       setInterval(function(){
-        store.dispatch('get_progress')
-        store.dispatch('get_running')
-        store.dispatch('get_cracked')
-        store.dispatch('get_pending')
+        // store.dispatch('get_progress')
+        // store.dispatch('get_running')
+        // store.dispatch('get_cracked')
+        // store.dispatch('get_pending')
         if (vm.$refs.highcharts) {
           let running = store.getters.getRunning.length;
           let status = store.getters.getProgress.status;

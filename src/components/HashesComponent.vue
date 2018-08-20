@@ -36,7 +36,7 @@
                     <span class='text-secondary'>{{ props.row.mode }}</span>
                   </div>
                   <div v-show='props.row.loot'>
-                    Loot: 
+                    Loot 💰: 
                     <span class='text-secondary'>{{ props.row.loot }}</span>
                   </div>
                   <div v-show='props.row.added'>
@@ -135,7 +135,9 @@
         columns: ['select', 'name', 'mode', 'loot', 'added'],      
         options: {
           headings: {
-            select: ''
+            select: '',
+            loot: 'Loot 💰',
+            added: 'Added'
           },
           columnsDisplay: {
             added: 'desktop',

@@ -3,22 +3,19 @@
     <div class="navbar">
       <h1><span class="oi mr2" data-glyph="lock-unlocked" title="icon name" aria-hidden="true"></span>Hashpass</h1>
       <ul>        
-        <router-link to="/">
+        <router-link to="/attack">
           <span class="oi" data-glyph="target" title="dashboard" aria-hidden="true"></span>
         </router-link>
         <router-link to="hashes">
           <span class="oi" data-glyph="key" title="hashes" aria-hidden="true"></span>
         </router-link>
-        <!-- <router-link to="queue">
-          <span class="oi" data-glyph="list" title="queue" aria-hidden="true"></span>
-        </router-link> -->
         <router-link to="/settings">
           <span class="oi" data-glyph="cog" aria-hidden="true"></span>
         </router-link>
-        <!-- <a href="/">
-          <span class="oi" data-glyph="account-logout" title="logout" aria-hidden="true"></span>
+        <a href="/">
+          <span @click="logout()" class="oi" data-glyph="account-logout" title="logout" aria-hidden="true"></span>
         </a>        
-      </ul> -->
+      </ul>
     </div>
     <div class="view-main">
       <router-view></router-view>
@@ -49,6 +46,11 @@
       stop: function() {
         store.dispatch('stop')
       },
+      logout: function() {
+        store.dispatch('logout')
+        store.dispatch('clear_token')
+        this.$router.push('/')
+      }
     },
     name: 'app'
   }
