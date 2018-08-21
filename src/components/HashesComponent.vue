@@ -66,7 +66,7 @@
           <l-control-zoom :position="position" />  
           <l-control-attribution :position="position" :prefix="Vue2Leaflet" />
           <l-control-scale :imperial="false" />       
-          <marker-popup v-for="hash in hashSelection" :position="latlong(parseFloat(hash.latitude), parseFloat(hash.longitude))" :text="hash.mode" :text="hash.name"></marker-popup>
+          <marker-popup v-for="hash in hashSelection" :key="hash.id" :position="latlong(parseFloat(hash.latitude), parseFloat(hash.longitude))" :text="hash.name"></marker-popup>
         </l-map>
       </div>      
     </div>

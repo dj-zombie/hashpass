@@ -12,6 +12,7 @@ const state = {
   dics: [],
   rules: [],
   users: [],
+  messages: [],
   token: '',
   item: {
     name: '',
@@ -186,7 +187,12 @@ const actions = {
         }
       })
       .catch(function(error) {
-        console.error('error in login', error)
+        // console.error('error in login', error)
+        console.log(error.response)
+        if (error.response.status == 401) {
+          _this.commit('add_message', '🚨 Wrong username or password! 🚨')
+        }
+        // _this.commit('add_message', error.response)
       })
   },
   logout(context) {
@@ -345,13 +351,18 @@ const actions = {
       })
   },
 
+  add_message(context, message) {
+    this.commit('add_message', message)
+  },
+  clear_messages(context) {
+    this.commit('clear_messages')
+  },
+
   show_modal(context) {
-    let _this = this
-    _this.commit('show_modal')
+    this.commit('show_modal')
   },
   hide_modal(context) {
-    let _this = this
-    _this.commit('hide_modal')
+    this.commit('hide_modal')
   }
 };
 
@@ -363,6 +374,8 @@ const mutations = {
     }
   },
   clear_token(context) { context.token = '' },
+  clear_messages(context) { context.messages = [] },
+  add_message(context, message) { context.messages.push(message) },
   load_pid_active (context, data) { context.pidActive = data.pid },
   get_progress (context, data) { context.progress = data },
   get_dics (context, data) { context.dics = data },
@@ -390,6 +403,7 @@ const mutations = {
 };
 
 const getters = {
+  getMessages(state) { return state.messages },
   getToken (state){ return state.token },
   getHashes (state){ return state.hashes },
   getDics (state){ return state.dics },

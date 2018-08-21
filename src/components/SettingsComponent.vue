@@ -151,7 +151,7 @@
         messages: [],
         dicCols: ['name', 'location', 'size'],
         ruleCols: ['name', 'location', 'size'],
-        userCols: ['email'],
+        userCols: ['email', 'role'],
       }
     },
     computed: {

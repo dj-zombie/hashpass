@@ -173,7 +173,7 @@ input[type="button"]::-moz-focus-inner {
 .VueTables__search { flex: 1; }
 
 .hashtable {
-  width:70%;
+  width:50%;
   padding-right:1rem;
   @media screen and (max-width: $mobile-view) {
     width: 100%;
@@ -181,8 +181,9 @@ input[type="button"]::-moz-focus-inner {
 }
 .map {
   height: 420px;
-  width: 30%;
+  width: 50%;
   border: 1px solid #3a3a3a;
+  background: #111;
   @media screen and (max-width: $mobile-view) {
     width: 100%;
   }

@@ -148,9 +148,6 @@
         </textarea>
       </div>
     </div>
-    <div class="field-group" style="width:145px;padding-left:5px" style="display:none">
-      <input type="reset" value="Reset the form" accesskey="r">
-    </div>
     <div name="submit" type="submit" v-on:click="add_item" @keyup.enter="add_item" class="btn btn--primary">Submit</div>
   </form>
 </template>

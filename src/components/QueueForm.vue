@@ -76,10 +76,6 @@
         <label class="label" for="email">Email</label>        
       </div>
     </div>
-
-    <div class="field-group" style="width:145px;padding-left:5px" style="display:none">
-      <input type="reset" value="Reset the form" accesskey="r">
-    </div>
     <div name="submit" type="submit" v-on:click="queue_item" @keyup.enter="queue_item" class="btn btn--primary align-center">Submit</div>
   </form>
 </template>
@@ -161,7 +157,7 @@
             .then(function(){
               store.dispatch('get_pending');
               store.dispatch('get_running');
-              _this.$router.push('/')
+              _this.$router.push('/attack')
             })
             .catch((error)=>{ console.error(error) })  
         })        

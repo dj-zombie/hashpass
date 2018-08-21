@@ -146,9 +146,11 @@ if (process.env.NODE_ENV === 'production') {
     devServer: {
       contentBase: 'public',
       historyApiFallback: true,
-      noInfo: true,
+      // noInfo: true,
+      // port: 8080,
+      inline: true,
       proxy: {
-        "/api": {
+        "/": {
           target: 'http://localhost:9292',
           changeOrigin: true
         }

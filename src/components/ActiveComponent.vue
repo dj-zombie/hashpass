@@ -1,5 +1,13 @@
 <template>
   <div class="dflex flex-col" style="padding: 2rem">
+    <vue-typer
+      v-if='getMessages[0]'
+      class='text-secondary'
+      :text="getMessages[getMessages.length-1]"
+      :pre-erase-delay='8000'
+      :erase-delay='50'
+      style='margin-bottom:3rem; text-align:center'>
+    </vue-typer>
     <transition name='fade'>
       <div v-show="getRunning[0]" class='skull-right'></div>
     </transition>
@@ -126,7 +134,7 @@
             }
           },
           subtitle: {
-            text: 'Waiting for status...',
+            text: '--->>> 💀 <<<---',
             verticalAlign: 'middle',
             floating: true,
             y: 35,
@@ -177,15 +185,15 @@
     },
     mounted() {
       let vm = this;
-      // store.dispatch('get_running')
-      // store.dispatch('get_progress')
-      // store.dispatch('get_cracked')
-      // store.dispatch('get_pending')
+      store.dispatch('get_running')
+      store.dispatch('get_progress')
+      store.dispatch('get_cracked')
+      store.dispatch('get_pending')
       setInterval(function(){
-        // store.dispatch('get_progress')
-        // store.dispatch('get_running')
-        // store.dispatch('get_cracked')
-        // store.dispatch('get_pending')
+        store.dispatch('get_progress')
+        store.dispatch('get_running')
+        store.dispatch('get_cracked')
+        store.dispatch('get_pending')
         if (vm.$refs.highcharts) {
           let running = store.getters.getRunning.length;
           let status = store.getters.getProgress.status;
@@ -201,7 +209,7 @@
             chart.setTitle(null,{text: status});
           }
           else {
-            chart.setTitle(null,{text: 'Waiting for status...'});
+            chart.setTitle(null,{text: '--->>> 💀 <<<---'});
           }
         }
       }, 5000);
@@ -209,6 +217,7 @@
     computed: {
       isRunning: function() { return store.getters.getIsRunning; },
       getRunning: function() { return store.getters.getRunning; },
+      getMessages: function() { return store.getters.getMessages; },
       percentage: function() {
         let cur = store.getters.getProgress.progress_cur||0,
             end = store.getters.getProgress.progress_end||0;

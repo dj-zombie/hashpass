@@ -59,7 +59,7 @@ class API
     options = {
       flags: active[:dictionary2].empty? && active[:rules].empty? && active[:mask].empty? ? '-a 0' : active[:rules].empty? && active[:mask].empty? ? '-a 1' : active[:rules].empty? ? '-a 3' : '-a 0',
       flags2: "-w 3 --status --status-timer=1 --session #{ time_now } --potfile-disable",
-      rules: !active[:rules].nil? ? "-r #{active[:rules]}" : '',  # "#{rules.join(',').delete(',')}" : '',
+      rules: active[:rules].empty? ? '' : "-r #{active[:rules]}",
       hash:  !active[:hashstring].empty? ? "#{active[:hashstring]}" : "hashes/#{active[:hash]}",
       dics: active[:dictionary].empty? && active[:dictionary2].empty? ? "" : active[:dictionary2].empty? ? "#{active[:dictionary]}" : "#{active[:dictionary]} #{active[:dictionary2]}",
       cracked: "cracked/#{active[:hash]}#{active[:hashstring]}.crack",
@@ -281,9 +281,9 @@ class API
       out << line
     end
     password = out[0].split(':').last
+    DB[:cracked].insert(hash: hash, password: password)
     @notifications.mail("0wn3d!", out[0])
     @DB[:hashes].where(id: active[:hashid]).update(loot: password)
     @DB[:active].delete if @DB[:pending].count == 0
-    DB[:cracked].insert(hash: hash, password: password)
   end
 end
