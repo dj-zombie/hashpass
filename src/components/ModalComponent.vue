@@ -9,7 +9,7 @@
           <div class="modal-body">
             <slot name="body"></slot>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer" v-if="hasFooterSlot">
             <slot name="footer"></slot>
           </div>
         </div>
@@ -22,6 +22,11 @@
   export default {
     data: function() {
       return { showModal: false }
+    },
+    computed: {
+      hasFooterSlot() {
+        return !!this.$slots.footer
+      }
     }
   }
 </script>
@@ -68,13 +73,20 @@
     flex: 1;
     overflow: auto;
   }
+  @media (max-width: 480px) {
+    .modal-body {
+      margin: 0;
+      padding: 1rem;
+    }
+  }
+
   .modal-header {
     padding: 1rem;
     background: #2a2a2a;
     max-height: 2rem;
   }
   .modal-footer {
-    padding: 1rem;
+    /*padding: 1rem;*/
     background: #2a2a2a;
     max-height: 25%;
     overflow-y: scroll;

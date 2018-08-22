@@ -72,6 +72,8 @@
       </label>
       <div class="field">
         <input name="latitude" type="text" placeholder="latitude" v-model="getItem.latitude">
+      </div>
+      <div class="field">
         <input name="longitude" type="text" placeholder="longitude" v-model="getItem.longitude">
       </div>
     </div>

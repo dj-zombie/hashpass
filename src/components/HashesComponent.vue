@@ -93,11 +93,11 @@
         </button>
       </h3>
       <queue-form :hashes="hashSelection" slot="body"></queue-form>
-      <v-client-table slot="footer" :data="showHistory" :columns="historyCols" :options="historyOps" >
+      <!-- <v-client-table slot="footer" :data="showHistory" :columns="historyCols" :options="historyOps" >
         <div v-if="props.row.started_on" slot="started_on" slot-scope="props">
           {{ props.row.started_on | moment("dddd, MMMM Do YYYY HH:mm") }}
         </div>
-      </v-client-table>
+      </v-client-table> -->
     </modal>
 
     <modal v-if="modalHashVisible" @close="hideModal">

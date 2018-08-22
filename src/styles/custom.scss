@@ -8,6 +8,9 @@ $color-highlight: #43a9fb;
 $color-red: #fb4343;
 $mobile-view: 720px;
 
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
+
 html { font-size: 12px; }
 html,body { height: 100%; }
 body {
@@ -468,6 +471,7 @@ input[type="checkbox"] {
   input[type="radio"],
   input[type="checkbox"],
   input[type="submit"]{ width: auto; }
+  form .field { width: 100%; }
   form .field-group{
     display: flex;
     flex-direction: column;
@@ -476,6 +480,7 @@ input[type="checkbox"] {
   form .field-group .label{
     padding: 0 0 5px 0;
     margin: 10px 0 0 0;
+    width: 100%;
   }
 }
 
