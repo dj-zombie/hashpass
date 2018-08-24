@@ -1,4 +1,4 @@
-# HashPass cracking Web Application & Server for ✨hashcat✨
+# HashPass cracking WebApp & Server for ✨hashcat✨
 
 ## Build Setup
 - install hashcat: https://hashcat.net/hashcat/
