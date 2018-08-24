@@ -187,12 +187,9 @@ const actions = {
         }
       })
       .catch(function(error) {
-        // console.error('error in login', error)
-        console.log(error.response)
         if (error.response.status == 401) {
           _this.commit('add_message', '🚨 Wrong username or password! 🚨')
         }
-        // _this.commit('add_message', error.response)
       })
   },
   logout(context) {

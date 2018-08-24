@@ -2,6 +2,8 @@
 
 ## Build Setup
 - install hashcat: https://hashcat.net/hashcat/
+- ```gem install bunlder && bundle install```
+- ```yarn install```
 - rename sample.env to .env and configure the options
 - run the server (./server.sh)
 - login as hashpass:hashpass
