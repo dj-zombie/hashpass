@@ -1,2 +1,2 @@
-front-end: bundle exec rackup -p8080
+front-end: bundle exec rackup -p9292
 back-end: yarn run dev

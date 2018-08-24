@@ -1,11 +1,12 @@
 <template>
-  <div class="dflex flex-col" style="padding: 2rem">
+  <div class="dflex flex-col" style="padding: 2rem"> 
     <vue-typer
-      v-if='getMessages[0]'
-      class='text-secondary'
+      v-if='getMessages.length'
+      class='error'
       :text="getMessages[getMessages.length-1]"
       :pre-erase-delay='8000'
       :erase-delay='50'
+      :type-delay='33'
       style='margin-bottom:3rem; text-align:center'>
     </vue-typer>
     <transition name='fade'>
@@ -109,155 +110,168 @@
 </template>
 
 <script>
-  import store from '../store/store'
+import store from '../store/store'
 
-  export default {
-    data: function() {
-      return {
-        options: {
-          chart: {
-            type: 'pie',
-            renderTo: 'container',
-            backgroundColor:'rgba(255, 255, 255, 0.0)',
-            height: 320,
-            width: 320,
-            borderRadius: 0
-          },
-          title: {
-            verticalAlign: 'middle',
-            floating: true,
-            text: '0.000%',
-            y: 5,
-            style: {
-              "color": '#3ddb16',
-              "fontSize": "3rem"
-            }
-          },
-          subtitle: {
-            text: '--->>> 💀 <<<---',
-            verticalAlign: 'middle',
-            floating: true,
-            y: 35,
-            style: {
-              "color": '#3ddb16',
-              "fontSize": "1rem"
-            }
-          },
-          credits: {
-            enabled: false
-          },
-          plotOptions: {
-            pie: {
-              innerSize: '80%',
-              size: '100%',
-              borderWidth: 0,
-              shadow: false,
-              startAngle: 0,
-              dataLabels: false,
-              borderColor: '#40bbd5',
-              stickyTracking: false,
-              states: {
-                hover: {
-                  enabled: false
-                }
-              },
-              point: {
-                events: {
-                  mouseOver: function(){
-                      this.series.chart.innerText.attr({text: this.y});
-                  },
-                  mouseOut: function(){
-                      this.series.chart.innerText.attr({text: 112});
-                  }
+export default {
+  data: function() {
+    return {
+      options: {
+        chart: {
+          type: 'pie',
+          renderTo: 'container',
+          backgroundColor:'rgba(255, 255, 255, 0.0)',
+          height: 320,
+          width: 320,
+          borderRadius: 0
+        },
+        title: {
+          verticalAlign: 'middle',
+          floating: true,
+          text: '0.000%',
+          y: 5,
+          style: {
+            "color": '#3ddb16',
+            "fontSize": "3rem"
+          }
+        },
+        subtitle: {
+          text: '--->>> 💀 <<<---',
+          verticalAlign: 'middle',
+          floating: true,
+          y: 35,
+          style: {
+            "color": '#3ddb16',
+            "fontSize": "1rem"
+          }
+        },
+        credits: {
+          enabled: false
+        },
+        plotOptions: {
+          pie: {
+            innerSize: '80%',
+            size: '100%',
+            borderWidth: 0,
+            shadow: false,
+            startAngle: 0,
+            dataLabels: false,
+            borderColor: '#40bbd5',
+            stickyTracking: false,
+            states: {
+              hover: {
+                enabled: false
+              }
+            },
+            point: {
+              events: {
+                mouseOver: function(){
+                    this.series.chart.innerText.attr({text: this.y});
+                },
+                mouseOut: function(){
+                    this.series.chart.innerText.attr({text: 112});
                 }
               }
             }
-          },
-          tooltip: false,
-          series: [{
-            data: [
-              [1],
-              [100]
-            ]
-          }]
-        }
-      }
-    },
-    mounted() {
-      let vm = this;
-      store.dispatch('get_running')
-      store.dispatch('get_progress')
-      store.dispatch('get_cracked')
-      store.dispatch('get_pending')
-      setInterval(function(){
-        store.dispatch('get_progress')
-        store.dispatch('get_running')
-        store.dispatch('get_cracked')
-        store.dispatch('get_pending')
-        if (vm.$refs.highcharts) {
-          let running = store.getters.getRunning.length;
-          let status = store.getters.getProgress.status;
-          let cur = store.getters.getProgress.progress_cur||0,
-              end = store.getters.getProgress.progress_end||0;
-          let percentage = (cur/end)*100||0;        
-          let { chart } = vm.$refs.highcharts;
-          var newData = [[percentage],[100-percentage]];
-          chart.series[0].setData(newData);
-          let text = percentage.toFixed(3) + '%';
-          chart.setTitle({text: text});
-          if (status) {
-            chart.setTitle(null,{text: status});
           }
-          else {
-            chart.setTitle(null,{text: '--->>> 💀 <<<---'});
-          }
-        }
-      }, 5000);
-    },
-    computed: {
-      isRunning: function() { return store.getters.getIsRunning; },
-      getRunning: function() { return store.getters.getRunning; },
-      getMessages: function() { return store.getters.getMessages; },
-      percentage: function() {
-        let cur = store.getters.getProgress.progress_cur||0,
-            end = store.getters.getProgress.progress_end||0;
-        let percentage = (cur/end)*100||0;
-        return parseFloat(percentage.toFixed(2));
-      },
-      pidActive: function() {
-        return store.getters.getPidActive
-      },
-      progress: function() {
-        return store.getters.getProgress
-      },
-      pid: function() {
-        return store.getters.getPid
-      },
-      cmd: function() {
-        return store.getters.getCmd
-      },
-      hash: function() {
-        let running = store.getters.getRunning[0];
-        if (running) {
-          return running.hash
-        }
-        else {
-          return 'feed me some hashes to pwn...'
-        }
-      },
-      running: function() {
-        return store.getters.getIsRunning
-      },
-      status: function() {
-        let status = store.getters.getProgress.status;
+        },
+        tooltip: false,
+        series: [{
+          data: [
+            [1],
+            [100]
+          ]
+        }]
       }
     }
+  },
+  mounted() {
+    let vm = this;
+    store.dispatch('get_running')
+    store.dispatch('get_progress')
+    store.dispatch('get_cracked')
+    store.dispatch('get_pending')
+    setInterval(function(){
+      store.dispatch('get_progress')
+      store.dispatch('get_running')
+      store.dispatch('get_cracked')
+      store.dispatch('get_pending')
+      if (vm.$refs.highcharts) {
+        let running = store.getters.getRunning.length;
+        let status = store.getters.getProgress.status;
+        let cur = store.getters.getProgress.progress_cur||0,
+            end = store.getters.getProgress.progress_end||0;
+        let percentage = (cur/end)*100||0;        
+        let { chart } = vm.$refs.highcharts;
+        var newData = [[percentage],[100-percentage]];
+        chart.series[0].setData(newData);
+        let text = percentage.toFixed(3) + '%';
+        chart.setTitle({text: text});
+        if (status) {
+          chart.setTitle(null,{text: status});
+        }
+        else {
+          chart.setTitle(null,{text: '--->>> 💀 <<<---'});
+        }
+      }
+    }, 5000);
+  },
+  computed: {
+    isRunning: function() { return store.getters.getIsRunning; },
+    getRunning: function() { return store.getters.getRunning; },
+    getMessages: function() { return store.getters.getMessages; },
+    percentage: function() {
+      let cur = store.getters.getProgress.progress_cur||0,
+          end = store.getters.getProgress.progress_end||0;
+      let percentage = (cur/end)*100||0;
+      return parseFloat(percentage.toFixed(2));
+    },
+    pidActive: function() {
+      return store.getters.getPidActive
+    },
+    progress: function() {
+      return store.getters.getProgress
+    },
+    pid: function() {
+      return store.getters.getPid
+    },
+    cmd: function() {
+      return store.getters.getCmd
+    },
+    hash: function() {
+      let running = store.getters.getRunning[0];
+      if (running) {
+        return running.hash
+      }
+      else {
+        return 'feed me some hashes to pwn...'
+      }
+    },
+    running: function() {
+      return store.getters.getIsRunning
+    },
+    status: function() {
+      let status = store.getters.getProgress.status;
+    }
   }
+}
 </script>
 
 <style>
-  .fade-enter-active,
-  .fade-leave-active { transition: opacity 5s ease-out;}
-  .fade-enter,
-  .fade-leave-to { opacity: 0; }
+.fade-enter-active,
+.fade-leave-active { transition: opacity 5s ease-out;}
+.fade-enter,
+.fade-leave-to { opacity: 0; }
+
+.error.vue-typer .custom.char {
+  color: red;
+  background-color: #000;
+}
+.error.vue-typer .custom.char.selected {
+  background-color: #264F78;
+}
+
+.error.vue-typer .custom.caret {
+  width: 0.75rem;
+  background-color: #666;
+}
 </style>

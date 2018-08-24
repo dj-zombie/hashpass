@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-
 axios.interceptors.request.use(request => {
   const token = JSON.parse(localStorage.getItem('user'))
   if (token) {

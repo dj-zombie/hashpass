@@ -32,7 +32,7 @@
           <div class="card" v-for="queue in getPending" v-bind:key="queue">
             <div class="card__header">
               <span class="oi mr2 fr" data-glyph="wifi" title="icon name" aria-hidden="true"></span>
-              {{queue.name}}
+              🎯 {{queue.name}}
             </div>
             <div class="card__body">
               <p v-if="queue.name">Hash: <span>{{ queue.hash }} {{ queue.hashstring }}</span></p>
@@ -87,6 +87,10 @@
           store.dispatch('start')
         }
         this.isLoading = true;
+        let _this = this
+        setTimeout(function() {
+          _this.isLoading = false;
+        }, 3000);
       },
       stop: function() { 
         store.dispatch('stop') 

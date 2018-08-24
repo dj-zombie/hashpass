@@ -3,7 +3,9 @@
     <div class="view-hashes">
       <div class="hashtable">           
         <v-client-table :data="getHashes" :columns="columns" :options="options" >
-          <div v-if="props.row.added" slot="added" slot-scope="props">{{ props.row.added | moment("dddd, MMMM Do YYYY HH:mm") }}</div>
+          <div v-if="props.row.added" slot="added" slot-scope="props">
+            {{ props.row.added | moment("dddd, MMMM Do YYYY HH:mm") }}
+          </div>
           <div slot="child_row" slot-scope="props" style='padding:1rem'>
             <div>
               <button class="btn btn--mini" @click="deleteHash(props.row.id)">Delete</button>
@@ -53,8 +55,6 @@
           <label for="select" class="label">Select All:</label>
           <input id="select" type="checkbox" v-model="selectall">
           <button class="btn btn--primary btn--small" @click="toggleModal(hash)">Queue</button>
-          <!-- <button class="btn btn--primary btn--small">Cut in line</button> -->
-          <!-- <button class="btn btn--primary btn--small">Edit</button>  -->
           <button class="btn btn--primary btn--small" @click="showModal">Add</button>
         </div>
       </div>
@@ -93,11 +93,6 @@
         </button>
       </h3>
       <queue-form :hashes="hashSelection" slot="body"></queue-form>
-      <!-- <v-client-table slot="footer" :data="showHistory" :columns="historyCols" :options="historyOps" >
-        <div v-if="props.row.started_on" slot="started_on" slot-scope="props">
-          {{ props.row.started_on | moment("dddd, MMMM Do YYYY HH:mm") }}
-        </div>
-      </v-client-table> -->
     </modal>
 
     <modal v-if="modalHashVisible" @close="hideModal">
@@ -170,8 +165,8 @@
         },
         marker: L.latLng(32.83165, -117.1123964),
         marker2: L.latLng(32.835615, -117.125568),
-        text: 'my marker popup text',
-        title: 'My marker popup title',
+        text: 'hash',
+        title: 'name',
         position: 'topright',
         zoom: 10,
         bounds: L.latLngBounds([[33.2323423, -223.32343], [32.835615, -117.125568]]),
@@ -182,7 +177,6 @@
       }
     },
     mounted() {
-      setTimeout(function() { window.dispatchEvent(new Event('resize')) }, 250);
       store.dispatch('get_history')
     },
     watch: {

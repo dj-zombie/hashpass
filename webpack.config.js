@@ -152,7 +152,7 @@ if (process.env.NODE_ENV === 'production') {
       proxy: {
         "/": {
           target: 'http://localhost:9292',
-          changeOrigin: true
+          changeOrigin: false
         }
       }
     },

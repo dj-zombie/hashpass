@@ -52,8 +52,6 @@
         <select id="rules" name="rules" v-model="getItem.rules">
           <option value="" selected disabled hidden>Select Rules</option>
           <option v-for="rule in getRules" :value="rule.location">{{rule.name}}</option>
-          <!--<option value="d3adhob0">d3adhob0</option>
-          <option value="OneRuleToRuleThemAll">OneRuleToRuleThemAll</option> -->
         </select>
       </div>
     </div>

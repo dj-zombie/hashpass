@@ -18,3 +18,5 @@ gem 'minitest'
 gem 'rack-ssl'
 gem 'thin'
 gem 'jwt'
+gem 'rack-attack' # https://github.com/kickstarter/rack-attack
+gem 'rack-protection' # https://github.com/sinatra/sinatra/tree/master/rack-protection

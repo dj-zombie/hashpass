@@ -232,6 +232,10 @@ const actions = {
     client.get_progress()
       .then(function(response){
         _this.commit('get_progress', response.data)
+        if (response.data.error) {
+          console.log('err', response.data.error)
+          _this.commit('add_message', 'ERROR: ' + response.data.error)
+        }
       })
       .catch(function(error) {
         console.error('error in get_progress', error)

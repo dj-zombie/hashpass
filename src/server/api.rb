@@ -67,19 +67,19 @@ class API
     }
 
     unless active[:hashmode].empty?
-      p @cmd = "hashcat -m #{active[:hashmode]} "\
+      @cmd = "hashcat -m #{active[:hashmode]} "\
         "#{options[:flags]} #{options[:flags2]} "\
         "#{options[:hash]} #{options[:dics]} "\
         "#{active[:mask]} #{options[:rules]} -o #{options[:cracked]} "\
-        "> #{options[:logs]}"
+        ">> #{options[:logs]} 2>&1"
     else 
-      p @cmd = "hashcat --session #{ active[:hash] } --restore "\
+      @cmd = "hashcat --session #{ active[:hash] } --restore "\
         "-o #{options[:cracked]} "\
-        "> #{options[:logs]}"
+        ">> #{options[:logs]} 2>&1"
     end
 
     @process = IO.popen(@cmd, 'w')
-    0
+    p $?
   end
 
   def clean
@@ -93,7 +93,6 @@ class API
   end
 
   def upload(files)
-    puts "files... #{files}"
     return if files.nil? || files.empty?
     files.each do |f|
       @filename = f[1][:filename]
@@ -111,12 +110,10 @@ class API
     false
   end
 
-  def status
-    active = @DB[:active].first
-    return '' if active.nil? || active.empty?
+  def status(active)    
     active[:hash] = active[:hashstring] unless active[:hashstring].nil? || active[:hashstring].empty?
     type = read_log('Hash.Type', 1, active[:hash]) || ''
-    recovered = read_log('Recovered', 1, active[:hash]) || '' #.delete(' ') || ''
+    recovered = read_log('Recovered', 1, active[:hash]) || ''
     target = read_log('Hash.Target', 1, active[:hash]) || ''
     speed_dev_1 = read_log('Speed.Dev.#1', 1, active[:hash]).to_s.delete(' ') || ''
     speed_dev_2 = read_log('Speed.Dev.#2', 1, active[:hash]).to_s.delete(' ') || ''
@@ -130,7 +127,7 @@ class API
     hw_monitor_2 = read_log('HWMon.Dev.#2', 2, active[:hash]).to_s.delete(' ') || ''
     progress_cur = read_log('Progress.', 1, active[:hash]).to_s.split('/')[0] || ''
     progress_end = read_log('Progress.', 1, active[:hash]).to_s.split('/')[1].to_s.split(' ')[0]
-    status = read_log('Status', 1, active[:hash]) || '...'
+    status = read_log('Status', 1, active[:hash]) || '💀'
 
     if restore_point.split('/')[0].to_i > 0
       latest = Date.today - 10000
@@ -145,6 +142,7 @@ class API
 
     tail = `tail -n 24 logs/#{active[:hash]}`
     found = tail.split("\n").grep(/Stopped/)[0] unless tail.empty?
+    error = tail.split("\n").grep(/31m/).last
     if found
       @DB[:history].where(hashid: active[:hashid]).update(restore: false) 
       @DB[:active].delete
@@ -190,7 +188,8 @@ class API
       progress_end: progress_end,
       status: status,
       found: found,
-      stdout: `tail -n 22 logs/#{active[:hash]}`
+      stdout: `tail -n 22 logs/#{active[:hash]}`,
+      error: error
     }
   end
 

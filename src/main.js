@@ -57,7 +57,3 @@ document.vueApp = new Vue({
 
 window.Vue = Vue;
 
-// document.loginApp = new Vue({
-//   el: '#loginapp',
-//   render: function(h){ return h(Login);}
-// });

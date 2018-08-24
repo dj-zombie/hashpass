@@ -2,18 +2,11 @@
   <div class="dflex flex-col" style="align-self:center; margin:0 auto">
     <vue-typer
       class='text-secondary'
-      :text="knock"
+      :class="{ 'error' : getMessages[0] }"
+      :text="getMsg"
       :pre-erase-delay='8000'
       :erase-delay='50'
-      style='margin-bottom:3rem; text-align:center'>
-    </vue-typer>
-    <vue-typer
-      v-if='getMessages[0]'
-      class='text-secondary'
-      :text="getMessages[getMessages.length-1]"
-      :pre-erase-delay='8000'
-      :erase-delay='50'
-      style='margin-bottom:3rem; text-align:center; color: red'>
+      style='margin-bottom:3rem; text-align:center;'>
     </vue-typer>
     <div class="dflex flex-col" style="align-items:center">
       <div class="field-group">
@@ -26,9 +19,10 @@
         <label for="password" class="label" style="margin-right:2rem">p@s$w0rD</label>
         <div class="field">
           <input name="password" id="password" placeholder="god" v-model="password" @keyup.enter="login()" type="password">
+          <input type="hidden" name="authenticity_token" value="DJz0mb13">
         </div>
       </div>
-      <button name="submit" @click="login()" class="btn btn--primary" @keyup.enter="login()" v-bind:class="{ 'loading' : loggingIn }" style="margin:0">Enter</button>
+      <button name="submit" @click="login()" class="btn btn--primary" @keyup.enter="login()" v-bind:class="{ 'loading' : loggingIn }">Enter</button>
     </div>
   </div>
 </template>
@@ -45,7 +39,18 @@
       };
     },
     computed: {
-      getMessages: function() { return store.getters.getMessages; }
+      getMessages: function() { return store.getters.getMessages; },
+      getMsg: function() { 
+        let msg = store.getters.getMessages
+        if (msg.length) {
+          return msg[msg.length-1]
+        }
+        else {
+          return 'Knock knock, Neo.'
+        }
+      }
+    },
+    mounted() {
     },
     methods: {
       login() {
@@ -73,3 +78,18 @@
     }
   }
 </script>
+
+<style>
+.error.vue-typer .custom.char {
+  color: red;
+  background-color: #000;
+}
+.error.vue-typer .custom.char.selected {
+  background-color: #264F78;
+}
+
+.error.vue-typer .custom.caret {
+  width: 0.75rem;
+  background-color: #666;
+}
+</style>

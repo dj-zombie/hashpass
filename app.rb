@@ -18,6 +18,9 @@ require 'dotenv/load'
 require 'bcrypt'
 require 'openssl'
 require 'jwt'
+require 'rack/attack'
+require 'active_support/time'
+require 'active_support/cache'
 require_relative 'src/server/notifications'
 require_relative 'src/server/log_parser.rb'
 require_relative 'src/server/api.rb'
@@ -62,6 +65,28 @@ class User < Sequel::Model
   end
 end
 
+class Rack::Attack
+  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new 
+  if ENV['APP_ENV'] == 'development'
+    Rack::Attack.safelist("localhost") { |req| req.ip == "127.0.0.1" }
+  end
+
+  # Block too many login attempts
+  throttle('hplogin', limit: 5, period: 20.seconds) do |req|
+    if req.path == '/hplogin' && req.post?
+      req.ip
+    end
+  end
+
+  # Block too many requests
+  throttle('req/ip', limit: 137, period: 5.minutes) do |req|
+    ignore = ['status','running','pending','cracked']
+    unless ignore.any? { |i| req.path.include?(i) }
+      req.ip
+    end
+  end  
+end
+
 ##
 # Public (user not authorized)
 class Public < Sinatra::Base
@@ -104,7 +129,7 @@ class Public < Sinatra::Base
       halt 401 
     elsif @user.password == params['password']
       logger.info "++ #{ ip(request) } User #{params['handle']} (#{@user.role}) logged in."
-      hmac_secret = ENV['JWT_SECRET']
+      hmac_secret = ENV['SECRET']
       scope = 
         if @user.role == 'admin'
           ['create', 'read', 'update', 'delete', 'user_management', 'loot']
@@ -132,7 +157,7 @@ class Public < Sinatra::Base
 end
 
 ##
-# JWT
+# JSON Web Tokens
 class JwtAuth
   def initialize app
     @app = app
@@ -142,7 +167,7 @@ class JwtAuth
     begin
       options = { algorithm: 'HS256', iss: ENV['JWT_ISSUER'] }
       bearer = env.fetch('HTTP_AUTHORIZATION', '').slice(7..-1)
-      payload, header = JWT.decode bearer, ENV['JWT_SECRET'], true, options
+      payload, header = JWT.decode bearer, ENV['SECRET'], true, options
 
       env[:scopes] = payload['scopes']
       env[:user] = payload['user']
@@ -235,13 +260,19 @@ class Api < Sinatra::Base
   end
 
   get '/status' do
-    verify_scope request, 'read' do |req, username|      
-      json api.status
+    verify_scope request, 'read' do |req, username|
+      if DB[:active].first
+        active = DB[:active].first
+        json api.status(active)
+      else
+        status 204
+      end
     end
   end
 
   get '/dics' do
     verify_scope request, 'read' do |req, username|
+      status 204 if DB[:dictionaries].all.empty?
       json DB[:dictionaries].reverse_order(:size).all
     end
   end
@@ -264,6 +295,7 @@ class Api < Sinatra::Base
 
   get '/rules' do
     verify_scope request, 'read' do |req, username|
+      status 204 if DB[:rules].all.empty?
       json DB[:rules].all
     end
   end
@@ -287,6 +319,7 @@ class Api < Sinatra::Base
 
   get '/users' do
     verify_scope request, 'user_management' do |req, username|
+      status 204 if DB[:users].all.empty?
       json DB[:users].all
     end
   end
@@ -316,12 +349,14 @@ class Api < Sinatra::Base
 
   get '/hashes' do
     verify_scope request, 'read' do |req, username|
+      status 204 if DB[:hashes].all.empty?
       json DB[:hashes].reverse_order(:added).all
     end
   end
 
   get '/history' do
     verify_scope request, 'read' do |req, username|
+      status 204 if DB[:history].all.empty?
       json DB[:history].reverse_order(:started_on).all
     end
   end
@@ -378,6 +413,7 @@ class Api < Sinatra::Base
   namespace '/pending' do
     get do
       verify_scope request, 'read' do |req, username|
+        status 204 if DB[:pending].all.empty?
         json pending: DB[:pending].all
       end
     end
@@ -402,7 +438,7 @@ class Api < Sinatra::Base
   namespace '/cracked' do
     get do
       verify_scope request, 'loot' do |req, username|
-        # logger.info "#{ ip(request) } Got cracked out."
+        status 204 if DB[:cracked].all.empty?
         json cracked: DB[:cracked].all
       end
     end
@@ -416,7 +452,6 @@ class Api < Sinatra::Base
 
     get '/:id' do
       verify_scope request, 'loot' do |req, username|
-        # logger.info "#{ ip(request) } Got crack crumbs."
         json cracked: DB[:cracked].where(id: params['id']).first
       end
     end

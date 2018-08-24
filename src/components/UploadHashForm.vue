@@ -89,36 +89,7 @@
     data: function(){
       return {
         files: '',
-        errors: [],
-        options: [{
-            value: 'rockyou.txt',
-            label: 'Rockyou'
-          }, {
-            value: 'john.txt',
-            label: 'John the ripper'
-          }, {
-            value: 'phpbb.txt',
-            label: 'PHPbb'
-          }, {
-            value: 'WoNDeR.txt',
-            label: 'wunderlist'
-          }],
-        hashModes: [{
-            value: '2500',
-            label: 'WPA2'
-          }, {
-            value: '0',
-            label: 'MD5'
-          }, {
-            value: '1700',
-            label: 'SHA-512'
-          }, {
-            value: '1000',
-            label: 'NTLM'
-          }, {
-            value: '300',
-            label: 'MySQL'
-          }],
+        errors: []        
       };
     },
     computed: {
