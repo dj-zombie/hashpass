@@ -1,8 +1,8 @@
 # HashPass cracking WebApp & Server for ✨hashcat✨
 
-Background: This project was created because I had an idea how I can really start abusing WIFI while out in the field. Armed with my raspberry pi and Alfa card, I was capturing lots of wifi handshakes and needed a server to offload the cracking to. I also wanted the server to send me an SMS once it finds the password. Hashpass was born! Please don't do anything naughty with this and I hope you have as much fun as I have!! 😏
+Background: This project was created because I had an idea how I can really start abusing WIFI while out in the field. Armed with my raspberry pi and Alfa card, I was capturing lots of wifi handshakes and needed a server to offload the cracking to. I also wanted the server to send me an SMS once it finds the password. Hashpass was born! Since then, this project has grown to aim to support all of hashcats features. I don't even use the hashcat command line anymore and if I need to then I'll just add a new feature to HashPass. If you need a feature implemented, please send me a message and I'll do my best. Please don't do anything naughty with this and I hope you have as much fun as I have!! 😏
 
-See my other project WatchCap for sending hashes found (via wifite) to the API.
+See my other project WatchCap for sending hashes found (via wifite) to the API. Currently I'm looking into utilizing the new attack method for obtaining the PMKID and creating a tool for it. I'm really curious if I'll be able to get these PMKIDs while dirving 🙀
 
 ![screenshot from 2018-08-23 20-20-36](https://user-images.githubusercontent.com/42399304/44563246-35489800-a712-11e8-8a3e-203188858029.png)
 
