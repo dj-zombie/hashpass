@@ -10,7 +10,7 @@
         </li>
       </ul>
     </p>
-    </div>
+    </div>    
     <div class="field-group">
       <label for="name" class="label">
         Name
@@ -31,10 +31,13 @@
         <small class="ml2">{{files.length}} files selected</small>
       </div>
     </div>
+    <p class="text-right">
+      If you need a hash generator try: <a href="https://www.onlinehashcrack.com/hash-generator.php" target="_blank">Online Hash Crack</a>
+    </p>
     <div class="field-group">
       <label for="hashstring" class="label">
         Hash String
-      </label>
+      </label>      
       <div class="field">
         <input name="hashstring" id="hashstring" type="text" v-model="getItem.hashstring">
        </div>
