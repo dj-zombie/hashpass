@@ -92,6 +92,10 @@ const actions = {
   },
 
   insert_hash(context, params) {
+    if (!params.latitude || !params.longitude) {
+      params.latitude = 0
+      params.longitude = 0
+    }
     return client.insert_hash(params.name, params.hash, params.hashmode, params.hashstring,
       params.latitude, params.longitude)
   },

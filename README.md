@@ -1,6 +1,22 @@
 # HashPass cracking WebApp & Server for ✨hashcat✨
 
+Background: This project was created because I had an idea how I can really start abusing WIFI while out in the field. Armed with my raspberry pi and Alfa card, I was capturing lots of wifi handshakes and needed a server to offload the cracking to. I also wanted the server to send me an SMS once it finds the password. Hashpass was born! Please don't do anything naughty with this and I hope you have as much fun as I have!! 😏
+
+See my other project WatchCap for sending hashes found (via wifite) to the API.
+
 ![screenshot from 2018-08-23 20-20-36](https://user-images.githubusercontent.com/42399304/44563246-35489800-a712-11e8-8a3e-203188858029.png)
+
+Features
+======================
+- Backend API server for sending hashes and controlling the application remotely. (Ruby/SQLite)
+- Custom designed frontend with a l33t hax0r theme similar to a terminal environment. (VueJS)
+- Hash queing
+- Cracking progress is updated in real time. Hashcat output automatically gets fed into the frontend.
+- Database driven. Upload and manage hashes, dictionaries, rules with attack history and pause/resume
+- Auth with user account roles and management settings
+- Regular security hardning against common attacks such as XSS, SQL injection, click jacking and CSRF
+- SMS and Email notifcations
+- Maps integration for attaching lat/long to your hashes. Great for WIFI ;)
 
 Installation
 ======================
