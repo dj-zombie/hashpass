@@ -165,6 +165,5 @@ Gemfile.lock
 .rvmrc
 
 # db
-# *.db
+*.db
 # End of https://www.gitignore.io/api/ruby,node
-
