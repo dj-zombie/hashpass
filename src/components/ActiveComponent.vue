@@ -161,16 +161,6 @@ export default {
               hover: {
                 enabled: false
               }
-            },
-            point: {
-              events: {
-                mouseOver: function(){
-                    this.series.chart.innerText.attr({text: this.y});
-                },
-                mouseOut: function(){
-                    this.series.chart.innerText.attr({text: 112});
-                }
-              }
             }
           }
         },

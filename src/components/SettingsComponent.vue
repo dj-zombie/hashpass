@@ -54,7 +54,7 @@
       </div>
 
       <h2>Rules</h2>
-      <v-client-table v-if="getRules.length != 0" :data="getRules" :columns="rulesCols">
+      <v-client-table v-if="getRules.length != 0" :data="getRules" :columns="ruleCols">
         <div class="p2" slot="child_row" slot-scope="props">
           <div>
             <button class="btn btn--mini" @click="delRule(props.row.id)">Delete</button>
@@ -151,7 +151,7 @@
         messages: [],
         dicCols: ['name', 'location', 'size'],
         ruleCols: ['name', 'location', 'size'],
-        userCols: ['email', 'role'],
+        userCols: ['email', 'role']
       }
     },
     computed: {

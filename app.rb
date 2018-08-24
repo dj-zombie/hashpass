@@ -413,7 +413,6 @@ class Api < Sinatra::Base
   namespace '/pending' do
     get do
       verify_scope request, 'read' do |req, username|
-        status 204 if DB[:pending].all.empty?
         json pending: DB[:pending].all
       end
     end
