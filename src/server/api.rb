@@ -67,18 +67,18 @@ class API
     }
 
     unless active[:hashmode].empty?
-      @cmd = "hashcat -m #{active[:hashmode]} "\
+      p @cmd = "hashcat -m #{active[:hashmode]} "\
         "#{options[:flags]} #{options[:flags2]} "\
         "#{options[:hash]} #{options[:dics]} "\
         "#{active[:mask]} #{options[:rules]} -o #{options[:cracked]} "\
         ">> #{options[:logs]} 2>&1"
     else 
-      @cmd = "hashcat --session #{ active[:hash] } --restore "\
+      p @cmd = "hashcat --session #{ active[:hash] } --restore "\
         "-o #{options[:cracked]} "\
         ">> #{options[:logs]} 2>&1"
     end
 
-    @process = IO.popen(@cmd, 'w')
+    @process = IO.popen(@cmd, 'w') 
     p $?
   end
 
@@ -140,18 +140,13 @@ class API
       result = @DB[:history].where(started_on: latest.to_s).update(restore: true) 
     end
 
-    tail = `tail -n 24 logs/#{active[:hash]}`
-    found = tail.split("\n").grep(/Stopped/)[0] unless tail.empty?
-    error = tail.split("\n").grep(/31m/).last
-    if found
-      @DB[:history].where(hashid: active[:hashid]).update(restore: false) 
-      @DB[:active].delete
-    end
-
+    
     if status == 'Cracked' && @DB[:pending].count == 0
-      @DB[:history].where(hashid: active[:hashid]).update(restore: false) 
+      puts "found cracked! - #{active[:hashid]}"
+      p @DB[:history].where(hashid: active[:hashid]).update(restore: false) 
       new_cracked
     elsif status == 'Cracked'
+      puts "found cracked!"
       @DB[:history].where(hashid: active[:hashid]).update(restore: false) 
       new_cracked
       promote
@@ -166,6 +161,14 @@ class API
       sleep 3
       start(active)
     elsif status == 'Exhausted' && @DB[:pending].count == 0
+      @DB[:history].where(hashid: active[:hashid]).update(restore: false) 
+      @DB[:active].delete
+    end
+
+    tail = `tail -n 24 logs/#{active[:hash]}`
+    found = tail.split("\n").grep(/Stopped/)[0] unless tail.empty?
+    error = tail.split("\n").grep(/31m/).last
+    if found
       @DB[:history].where(hashid: active[:hashid]).update(restore: false) 
       @DB[:active].delete
     end
@@ -248,10 +251,15 @@ class API
       name: name, hash: hashfile, hashmode: hashmode, hashstring: hashstring
     }
 
-    hash = Hashes.new(name: name, file: hashfile, string: hashstring, mode: hashmode, 
-      latitude: latitude, longitude: longitude, added: Time.now.iso8601)
-    hash.save
-    p hash
+    exists = Hashes.where(name: name).first
+    if exists.nil?
+      new_hash = Hashes.new(name: name, file: hashfile, string: hashstring, mode: hashmode, 
+        latitude: latitude, longitude: longitude, added: Time.now.iso8601)
+      new_hash.save      
+      p new_hash
+    else      
+      [201, {}, ['']]
+    end
   end
 
   def insert_dic(param)
@@ -272,17 +280,17 @@ class API
   end
 
   def new_cracked
-    active = @DB[:active].first
+    p active = @DB[:active].first
     return if active.nil? || active.empty?
     out = []
-    hash = !active[:hashstring].empty? ? "#{active[:hashstring]}" : "#{active[:hash]}"
+    p hash = !active[:hashstring].empty? ? "#{active[:hashstring]}" : "#{active[:hash]}"
     File.readlines('cracked/' + "#{hash}" + '.crack').each do |line|
       out << line
     end
     password = out[0].split(':').last
     DB[:cracked].insert(hash: hash, password: password)
-    @notifications.mail("0wn3d!", out[0])
     @DB[:hashes].where(id: active[:hashid]).update(loot: password)
     @DB[:active].delete if @DB[:pending].count == 0
+    # @notifications.mail("0wn3d!", out[0])
   end
 end

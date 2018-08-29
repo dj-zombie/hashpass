@@ -38,7 +38,7 @@ hahahahahahahahahahahahahahaaaa
 - ```$ cd hashcat```
 - ```$ gem install bunlder && bundle install```
 - ```$ yarn install```
-- rename ```sample.env``` to ```.env```. Open .env and configure the options if you want to secure your server or get SMS/Email notifications working.
+- rename ```sample.env``` to ```.env```. Open .env and configure the options if you want to secure your server or get SMS/Email notifications working. Setup gmail app password [here](https://myaccount.google.com/apppasswords)
 - run the server ```$ ./server.sh```
 - visit ```localhost``` in your browser
 - login as hashpass:hashpass

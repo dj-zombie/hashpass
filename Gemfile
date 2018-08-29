@@ -7,7 +7,7 @@ gem 'sequel' # https://github.com/jeremyevans/sequel
 gem 'foreman'
 gem 'sqlite3'
 gem 'pry'
-gem 'mail'
+gem 'mail' # https://github.com/mikel/mail
 gem 'listen'
 gem 'dotenv'
 gem 'bcrypt'

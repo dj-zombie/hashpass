@@ -237,7 +237,7 @@
             .then(function(){
               store.dispatch('get_pending');
               store.dispatch('get_running');
-              _this.$router.push('/')
+              _this.$router.push('/attack')
             })
             .catch((error)=>{ console.error(error) })  
       },

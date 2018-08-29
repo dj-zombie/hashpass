@@ -4,6 +4,10 @@
 # include email and SMS
 #
 class Notifications
+  def initialize
+    @mail_send_count = 0
+  end
+
   def mail(subject, body)
     options = { address:              'smtp.gmail.com',
                 port:                 587,
@@ -12,20 +16,21 @@ class Notifications
                 authentication:       'plain',
                 enable_starttls_auto: true }
 
-    puts "Mail: #{options}, #{ENV}"
+    puts "Mail: #{options}, count [#{ @mail_send_count }]"
 
     Mail.defaults do
       delivery_method :smtp, options
     end
 
     # Deliver to SMS
-    if true
+    if @mail_send_count < 10
       Mail.deliver do
         to "#{ ENV['SMS_PHONE_NUM'] }@#{ ENV['SMS_CARRIER'] }"
         from 'noreply@hashpass.app'
         subject subject
         body body
       end
+      @mail_send_count += 1
     end
 
     # Deliver to Email
@@ -36,6 +41,7 @@ class Notifications
         subject subject
         body body
       end
+      @mail_send_count += 1
     end
   end
 end

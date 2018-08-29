@@ -15,7 +15,7 @@
       <div class="label">
         Attacking: ⛧ 
       </div>
-      <ul class="field">
+      <ul class="field" style="display: block">
         <li v-for="(hash, i) in hashes">
           <span class="text-red">{{ hash.name }}</span> ⛧
         </li>

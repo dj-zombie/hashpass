@@ -70,6 +70,15 @@ class Rack::Attack
   if ENV['APP_ENV'] == 'development'
     Rack::Attack.safelist("localhost") { |req| req.ip == "127.0.0.1" }
   end
+  
+  Rack::Attack.blocklist_ip("2.181.28.244")
+  Rack::Attack.blocklist_ip("41.46.86.128")
+  Rack::Attack.blocklist_ip("27.68.51.145") 
+  Rack::Attack.blocklist_ip("31.184.195.108") 
+  Rack::Attack.blocklist_ip("31.162.235.56") 
+  Rack::Attack.blocklist_ip("188.16.0.253")
+  Rack::Attack.blocklist_ip("197.51.3.85")
+  Rack::Attack.blocklist_ip("176.32.32.156")
 
   # Block too many login attempts
   throttle('hplogin', limit: 5, period: 20.seconds) do |req|
@@ -112,7 +121,7 @@ class Public < Sinatra::Base
   end
 
   get '/' do
-    logger.info "#{ ip(request) } get / ."
+    logger.info "#{ request.inspect } get / ."
     File.read(File.join('public', 'app.html'))
   end
 
@@ -137,7 +146,7 @@ class Public < Sinatra::Base
           ['create', 'read', 'update', 'loot']
         end
       payload = {
-        exp: Time.now.to_i + 60 * 60,
+        exp: Time.now.to_i + 60 * 60 * 24,
         iat: Time.now.to_i,
         iss: ENV['JWT_ISSUER'],
         scopes: scope,
@@ -150,7 +159,7 @@ class Public < Sinatra::Base
 
       { token: token }.to_json
     else
-      logger.warn "#{ ip(request) } Wrong password for #{@user.email} (#{ params['password'] })."
+      logger.warn "#{ request.inspect } Wrong password for #{@user.email} (#{ params['password'] })."
       halt 401
     end
   end
@@ -216,7 +225,7 @@ class Api < Sinatra::Base
 
   def verify_scope req, scope
     scopes, user = req.env.values_at :scopes, :user
-    username = user['username'].to_sym
+    username = user['username'].to_sym if user['username']
 
     if scopes.include?(scope)
       yield req, username
@@ -252,9 +261,10 @@ class Api < Sinatra::Base
   end
 
   post '/upload' do
-    verify_scope request, 'create' do |req, username|
-      logger.info "#{ ip(request) } Uploading files: #{ params[:files] }."
-      api.upload(params[:files])
+    puts "Upload! #{request}"
+    logger.info "#{ request.inspect } Uploading files: #{ params[:files] }."
+    verify_scope request, 'create' do |req, username|      
+      p api.upload(params[:files])
       json success: true
     end
   end
@@ -304,7 +314,7 @@ class Api < Sinatra::Base
     verify_scope request, 'create' do |req, username|
       logger.info "#{ ip(request) } Created rule #{ params['name'] }."
       request.body.rewind
-      json api.insert_rule(JSON.parse(request.body.read))
+      json api.insert_rule(JSON.parse(request.body.read)).values
     end
   end
 
@@ -384,7 +394,7 @@ class Api < Sinatra::Base
     verify_scope request, 'create' do |req, username|
       logger.info "#{ ip(request) } Created Hash #{ params['name'] }."
       request.body.rewind
-      json success: true if api.insert_hash(JSON.parse(request.body.read))
+      api.insert_hash(JSON.parse(request.body.read))
     end
   end
 
