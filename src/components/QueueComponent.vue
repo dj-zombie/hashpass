@@ -20,7 +20,10 @@
           <button v-if="getPending[0]" class="btn btn--primary" v-bind:class="{ 'loading' : isLoading }" @click="start">
             <span>Crack!</span>
           </button>
-          <router-link v-else to="/hashes" class="btn btn--secondary" tag="button">Queue Hash</router-link>
+          <router-link v-else to="/hashes" class="btn btn--secondary" tag="button">
+            <span class="oi" data-glyph="list" title="clear" aria-hidden="true"></span>
+            Queue Hash
+          </router-link>
         </div>
         <button v-if="getPending[0]" class="btn btn--small" @click="promote_next">
           <span class="oi" data-glyph="arrow-circle-top" title="icon name" aria-hidden="true"></span>

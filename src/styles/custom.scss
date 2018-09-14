@@ -105,6 +105,7 @@ textarea {
   margin: 0.5rem;
   min-width: 7rem;
   text-align: center;
+  font-weight: bold;
   &--mini {
     padding: .2rem 0.5rem;
     font-size: .75rem;
@@ -183,7 +184,7 @@ input[type="button"]::-moz-focus-inner {
   }
 }
 .map {
-  height: 420px;
+  height: 433px;
   width: 50%;
   border: 1px solid #3a3a3a;
   background: #111;
@@ -364,23 +365,22 @@ ul {
 
 .view-cracked {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
+  flex-flow: wrap;
   margin: 0 auto;
   padding: 1rem;
 	h2 { color: $color-primary; }
 }
 
 .card {
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 	margin: 1rem;
 	background: #222;
 	box-shadow: 0px 2px 3px #000;
-  width: 100%;
-	max-width: 600px;
   box-shadow: 1px 1px 1px #333;
 	&__header {
-		background: #2a2a2a;
+    background: linear-gradient(180deg,#1e1e1e 50%,#232323 0,#363636 95%);
 		padding: 1rem;
 		border-top: 1px solid #555;
 		border-left: 1px solid #555;
@@ -388,6 +388,8 @@ ul {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-shadow: #0a0a0a 0px 4px 3px;
+    .oi { color: $color-red; }
 	}
 	&__body {
 		padding: 1rem;

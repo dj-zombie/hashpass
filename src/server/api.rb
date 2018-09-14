@@ -67,6 +67,7 @@ class API
     }
 
     unless active[:hashmode].empty?
+      `killall hashcat`
       p @cmd = "hashcat -m #{active[:hashmode]} "\
         "#{options[:flags]} #{options[:flags2]} "\
         "#{options[:hash]} #{options[:dics]} "\
@@ -291,6 +292,7 @@ class API
     DB[:cracked].insert(hash: hash, password: password)
     @DB[:hashes].where(id: active[:hashid]).update(loot: password)
     @DB[:active].delete if @DB[:pending].count == 0
-    # @notifications.mail("0wn3d!", out[0])
+    `espeak -a 200 -v english-us "Target Comprimised. Password found for #{ hash }. Authenticate with the password: #{ password }"`
+    @notifications.mail("0wn3d!", out[0])
   end
 end

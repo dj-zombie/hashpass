@@ -54,7 +54,7 @@
         <div style='align-items: center'>
           <label for="select" class="label">Select All:</label>
           <input id="select" type="checkbox" v-model="selectall">
-          <button class="btn btn--primary btn--small" @click="toggleModal(hash)">Queue</button>
+          <button v-show="hashSelection.length" class="btn btn--primary btn--small" @click="toggleModal(hash)">Queue</button>
           <button class="btn btn--primary btn--small" @click="showModal">Add</button>
         </div>
       </div>
@@ -66,12 +66,14 @@
           <l-control-zoom :position="position" />  
           <l-control-attribution :position="position" :prefix="Vue2Leaflet" />
           <l-control-scale :imperial="false" />       
-          <marker-popup v-for="hash in hashSelection" :key="hash.id" :position="latlong(parseFloat(hash.latitude), parseFloat(hash.longitude))" :text="hash.name"></marker-popup>
+          <marker-popup v-for="hash in hashSelection" :key="hash.id" :position="latlong(parseFloat(hash.latitude), parseFloat(hash.longitude))" :title="hash.loot" :text="getMarkerContent(hash.name, hash.loot)"></marker-popup>
         </l-map>
       </div>      
     </div>
     <div class="p2">
-      <h2 class="text-center">History</h2>
+      <h2 class="text-center">
+        History
+      </h2>
       <v-client-table :data="showHistory" :columns="historyCols" :options="historyOps" >
 
         <div v-if="props.row.restore" slot="restore" slot-scope="props">
@@ -168,7 +170,7 @@
         text: 'hash',
         title: 'name',
         position: 'topright',
-        zoom: 10,
+        zoom: 11,
         bounds: L.latLngBounds([[33.2323423, -223.32343], [32.835615, -117.125568]]),
         maxBounds: L.latLngBounds([[33.2323423, -223.32343], [32.835615, -117.125568]]),
         url: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
@@ -181,6 +183,7 @@
     },
     watch: {
       hashSelection: function(val) {
+        if (!val.length) { return }
         let id = val[val.length-1].id
         store.dispatch('get_history', id)
       }
@@ -229,6 +232,14 @@
       },
       rowclick: function(id) {
         store.dispatch('get_history', id)
+      },
+      getMarkerContent: function(name, loot) {
+        if (loot) {
+          return name + ' - ' + loot
+        }
+        else {
+          return name
+        }
       },
       resume: function(row) {
         console.log('resume', row)

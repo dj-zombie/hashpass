@@ -71,17 +71,8 @@ class Rack::Attack
     Rack::Attack.safelist("localhost") { |req| req.ip == "127.0.0.1" }
   end
   
-  Rack::Attack.blocklist_ip("2.181.28.244")
-  Rack::Attack.blocklist_ip("41.46.86.128")
-  Rack::Attack.blocklist_ip("27.68.51.145") 
-  Rack::Attack.blocklist_ip("31.184.195.108") 
-  Rack::Attack.blocklist_ip("31.162.235.56") 
-  Rack::Attack.blocklist_ip("188.16.0.253")
-  Rack::Attack.blocklist_ip("197.51.3.85")
-  Rack::Attack.blocklist_ip("176.32.32.156")
-
   # Block too many login attempts
-  throttle('hplogin', limit: 5, period: 20.seconds) do |req|
+  throttle('hplogin', limit: 90, period: 90.seconds) do |req|
     if req.path == '/hplogin' && req.post?
       req.ip
     end
@@ -120,12 +111,42 @@ class Public < Sinatra::Base
     "[#{ request.env['REMOTE_ADDR'] }] --> "
   end
 
+
+  get '/wpa/:ssid' do
+    response.headers['Cache-Control'] = 'public, max-age=1'
+    exists = DB[:hashes].where(name: params['ssid']).first
+
+    if exists
+      ssid = params['ssid']
+      password = DB[:hashes].where(name: params['ssid']).get(:loot)
+      if password
+        password = password.delete("\n").rstrip 
+      else 
+        return [201, {}, ['']]
+      end
+      conf = <<~HEREDOC        
+        update_config=1
+        network={
+                ssid="#{ ssid }"
+                psk="#{ password }"
+        }
+      HEREDOC
+      File.write("wpa/#{ ssid }_wpa_supplicant.conf", conf)
+      send_file("./wpa/#{ ssid }_wpa_supplicant.conf", 
+        :filename => ".wpa/#{ ssid }_wpa_supplicant.conf", 
+        :type => 'Application/octet-stream'
+      )
+    else
+      [201, {}, ['']]
+    end
+  end
+
   get '/' do
     logger.info "#{ request.inspect } get / ."
     File.read(File.join('public', 'app.html'))
   end
 
-  post '/hplogin' do    
+  post '/hplogin' do
     request.body.rewind
     params = JSON.parse(request.body.read)
     @user = User.first(email: params['handle'])
