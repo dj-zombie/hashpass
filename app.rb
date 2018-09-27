@@ -51,6 +51,12 @@ class Rules < Sequel::Model(DB[:rules])
 end
 
 ##
+# RottenPi model
+class Rotten < Sequel::Model(DB[:rotten])
+end
+
+
+##
 # User model
 class User < Sequel::Model
   include BCrypt
@@ -80,7 +86,7 @@ class Rack::Attack
 
   # Block too many requests
   throttle('req/ip', limit: 137, period: 5.minutes) do |req|
-    ignore = ['status','running','pending','cracked']
+    ignore = ['status','running','pending','cracked', 'heartbeat', 'getcmd', 'command', 'agent']
     unless ignore.any? { |i| req.path.include?(i) }
       req.ip
     end
@@ -139,6 +145,60 @@ class Public < Sinatra::Base
     else
       [201, {}, ['']]
     end
+  end
+
+  # get '/agent/attackplan' do
+  #   plan = [
+  #     # {
+  #     #   actions: ['pmkid', 'shutdown:60']
+  #     # },
+  #     {
+  #       ssid: "The Darkside",
+  #       actions: ['recon']
+  #     },
+  #     # {
+  #     #   ssid: 'Bird1',
+  #     #   actions: ['recon', 'shutdown']
+  #     # }
+  #     # ssid: ["Luna Secret Rlouter"],
+  #     # ssid: ["Luna's Wooffi"]
+  #   ].to_json
+  # end
+
+
+  post '/agent-upload' do
+    puts "Agent Upload! #{request.body}"
+    logger.info "#{ request.inspect } Agent uploading files: #{ params[:files] }."
+    # verify_scope request, 'create' do |req, username|      
+      api = API.new
+      puts "params: #{ params }"
+      p api.agent_upload(params[:files], params[:ssid])
+      json success: true
+    # end
+  end
+
+  get '/agent/logs/:ssid' do
+    response.headers['Cache-Control'] = 'public, max-age=1'
+    begin      
+      json Dir["agent/#{ params['ssid'] }/log/*"].map! { |f| f.split('/').last }
+    rescue
+      [201, {}, ['']]
+      next
+    end
+  end
+
+  get '/agent/log/:ssid/:log' do
+    begin
+      File.read("agent/#{ params['ssid'] }/log/#{ params['log'] }")
+    rescue
+      [201, {}, ['']]
+      next
+    end
+  end
+
+  get '/agent/ssh' do
+    `/root/hashpass/src/server/oterm.sh /root/hashpass/src/server/autos.sh`
+    [200, {}, ['']]
   end
 
   get '/' do
@@ -260,6 +320,86 @@ class Api < Sinatra::Base
     api.main_page
   end
 
+  # Agent updates
+  ['checkin', 'checkout', 'heartbeat', 'command'].each do |endpoint|
+    post "/agent/#{ endpoint }" do      
+      verify_scope request, 'update' do |req, username|
+        request.body.rewind
+        param = JSON.parse(request.body.read)
+        DB[:rotten].insert(
+          user: request.env[:user]['username'],
+          event: endpoint.upcase,
+          result: param['result'],
+          function: param['function'],
+          arguments: param['arguments'],
+          timestamp: Time.now.to_s
+        )
+        [200, {}, ['']]
+      end
+    end
+  end
+
+  post '/agent/newcommand' do
+    puts "params: #{params}"
+    verify_scope request, 'create' do |req, username|
+      request.body.rewind
+      param = JSON.parse(request.body.read)
+      puts "param: #{param}"
+      DB[:rotten_cmd].insert(
+        user: param['user'],
+        function: param['function'],
+        arguments: param['arguments'],
+        timestamp: Time.now.to_s
+      )
+      [200, {}, ['']]
+    end
+  end
+
+  get '/agent/commands' do
+    verify_scope request, 'read' do |req, username|
+      status 204 if DB[:rotten_cmd].all.empty?
+      json DB[:rotten_cmd].all
+    end
+  end
+
+  get '/agent/:user/getcmd' do
+    cmd = DB[:rotten_cmd].where(user: params['user']).all
+    DB[:rotten_cmd].where(user: params['user']).delete
+    json cmd
+  end
+
+  delete '/agent/rotten/command/:id' do
+    verify_scope request, 'delete' do |req, username|
+      deleted = DB[:rotten_cmd].where(id: params['id']).delete
+      json deleted: deleted if deleted
+    end
+  end
+
+  delete '/agent/rotten/commands' do
+    verify_scope request, 'delete' do |req, username|
+      deleted = DB[:rotten_cmd].delete
+      [200, {}, ['']] if deleted
+    end
+  end
+
+
+
+  get '/agent/rotten' do
+    verify_scope request, 'read' do |req, username|
+      status 204 if DB[:rotten].all.empty?
+      json DB[:rotten].all
+    end
+  end
+
+  delete '/agent/rotten' do
+    verify_scope request, 'delete' do |req, username|
+      deleted = DB[:rotten].delete
+      [200, {}, ['']] if deleted
+    end
+  end
+
+
+
   get '/start' do
     verify_scope request, 'update' do |req, username|
       logger.info "#{ ip(request) } Starting attack."
@@ -289,6 +429,7 @@ class Api < Sinatra::Base
       json success: true
     end
   end
+
 
   get '/status' do
     verify_scope request, 'read' do |req, username|

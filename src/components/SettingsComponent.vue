@@ -1,133 +1,147 @@
 <template>
-  <div class="dflex flex-col">
-    <div class="dflex flex-col p2 align-center max600" action=''>
-      <ul class="info">
-        <li v-for="messages in messages">
-          {{ messages }}
+  <div class="dflex flex-col skull-bg">
+    <ul class="info" style="margin:0">
+      <li v-for="messages in messages">
+        {{ messages }}
+      </li>
+    </ul>    
+    <p v-if="errors.length">
+      <b>
+        Please correct the following error(s):
+      </b>
+      <ul class="error">
+        <li v-for="error in errors">
+          {{ error }}
         </li>
       </ul>
-      <h2>Dictionaries</h2>
-      <p v-if="errors.length">
-        <b>
-          Please correct the following error(s):
-        </b>
-        <ul class="error">
-          <li v-for="error in errors">
-            {{ error }}
-          </li>
-        </ul>
-      </p>
-
-      <v-client-table v-if="getDics.length != 0" :data="getDics" :columns="dicCols">
-        <div class="p2" slot="child_row" slot-scope="props">
-          <div>
-            <button class="btn btn--mini" @click="delDictionary(props.row.id)">Delete</button>
+    </p>
+    <div class="dflex flex-row p2 align-center settings-page" action="" style="flex-wrap:wrap;">
+      <div class="flex1 dflex flex-col" style="padding: 0 2rem;">
+        <h2>
+          Dics
+        </h2>
+        <v-client-table v-if="getDics.length != 0" :data="getDics" :options="dicOps" :columns="dicCols">
+          <div class="p2" slot="child_row" slot-scope="props">
+            <div>
+              <button class="btn btn--mini" @click="delDictionary(props.row.id)">Delete</button>
+            </div>
+          </div>
+        </v-client-table>
+        <div class="info mb2" v-else>
+          <span class="error">Dictionary list empty.</span>
+          To add a dictionary, first give it a name then specify the file path of the dictionary/wordlist 
+          in the location field. This location must be a path accessable by the server. <i>Tips: drag and drop
+          a file into the location field to save yourself from typing the path. Don't have any wordlists?
+          Try downloading some from <a href="https://github.com/danielmiessler/SecLists" target="_blank">SecLists</a></i>
+        </div>
+        <div class="field-group">
+          <label for="name" class="label">
+            Dictionary Name:
+          </label>
+          <div class="field">
+            <input name="name" id="name" type="text" placeholder="Rockyou" spellcheck="false" v-model="name">
           </div>
         </div>
-      </v-client-table>
-      <div class="info mb2" v-else>
-        <span class="error">Dictionary list empty.</span>
-        To add a dictionary, first give it a name then specify the file path of the dictionary/wordlist 
-        in the location field. This location must be a path accessable by the server. <i>Tips: drag and drop
-        a file into the location field to save yourself from typing the path. Don't have any wordlists?
-        Try downloading some from <a href="https://github.com/danielmiessler/SecLists" target="_blank">SecLists</a></i>
-      </div>
-      <div class="field-group">
-        <label for="name" class="label">
-          Dictionary Name:
-        </label>
-        <div class="field">
-          <input name="name" id="name" type="text" placeholder="Rockyou" spellcheck="false" v-model="name">
-        </div>
-      </div>
-      <div class="field-group">
-        <label for="location" class="label">
-          Path Location:
-        </label>
-        <div class="field">
-          <input name="location" id="location" type="text" placeholder="ex: /usr/share/wordlists/rockyou.txt" spellcheck="false" v-model="location">
-        </div>
-      </div>
-      <div name="submit" type="submit" v-on:click="addDictionary" @keyup.enter="addDictionary" class="btn btn--primary align-center">
-        <span class="oi" data-glyph="plus" title="add" aria-hidden="true"></span>
-        Add Dictionary
-      </div>
-
-      <h2>Rules</h2>
-      <v-client-table v-if="getRules.length != 0" :data="getRules" :columns="ruleCols">
-        <div class="p2" slot="child_row" slot-scope="props">
-          <div>
-            <button class="btn btn--mini" @click="delRule(props.row.id)">Delete</button>
+        <div class="field-group">
+          <label for="location" class="label">
+            Path Location:
+          </label>
+          <div class="field">
+            <input name="location" id="location" type="text" placeholder="ex: /usr/share/wordlists/rockyou.txt" spellcheck="false" v-model="location">
           </div>
         </div>
-      </v-client-table>
-      <div class="info mb2" v-else>
-        <span class="error">Rule list empty.</span>
-        To add a rules, first give it a name then specify the file path of the rule 
-        in the location field. This location must be a path accessable by the server. <i>Tip: drag and drop
-        a file into the location field to save yourself from typing the path.</i>
+        <button name="submit" type="submit" v-on:click="addDictionary" @keyup.enter="addDictionary" class="btn btn--primary align-center">
+          <span class="oi" data-glyph="book" title="add" aria-hidden="true"></span>
+          Add Dictionary
+        </button>
       </div>
-      <div class="field-group">
-        <label for="ruleName" class="label">
-          Rule Name:
-        </label>
-        <div class="field">
-          <input name="ruleName" id="ruleName" type="text" placeholder="Best 64" spellcheck="false" v-model="ruleName">
+
+      <div class="flex1 dflex flex-col" style="padding: 0 2rem;">
+        <h2>
+          Rules
+        </h2>
+        <v-client-table v-if="getRules.length != 0" :data="getRules" :options="ruleOpts" :columns="ruleCols">
+          <div class="p2" slot="child_row" slot-scope="props">
+            <div>
+              <button class="btn btn--mini" @click="delRule(props.row.id)">Delete</button>
+            </div>
+          </div>
+        </v-client-table>
+        <div class="info mb2" v-else>
+          <span class="error">Rule list empty.</span>
+          To add a rules, first give it a name then specify the file path of the rule 
+          in the location field. This location must be a path accessable by the server. <i>Tip: drag and drop
+          a file into the location field to save yourself from typing the path.</i>
         </div>
-      </div>
-      <div class="field-group">
-        <label for="ruleLocation" class="label">
-          Rule Location:
-        </label>
-        <div class="field">
-          <input name="ruleLocation" id="ruleLocation" type="text" placeholder="ex: /usr/share/hashcat/rules/best64.rule" spellcheck="false" @keyup.enter="addRule" v-model="ruleLocation">
-        </div>
-      </div>
-
-      <div name="submit" type="submit" v-on:click="addRule" class="btn btn--primary align-center">
-        <span class="oi" data-glyph="plus" title="add" aria-hidden="true"></span>
-        Add Rule
-      </div>
-
-
-      <h2>Users</h2>
-      <v-client-table v-if="getUsers.length != 0" :data="getUsers" :columns="userCols" >
-        <div class="p2" slot="child_row" slot-scope="props">
-          <div>
-            <button class="btn btn--mini" @click="delUser(props.row.id)">Delete</button>
+        <div class="field-group">
+          <label for="ruleName" class="label">
+            Rule Name:
+          </label>
+          <div class="field">
+            <input name="ruleName" id="ruleName" type="text" placeholder="Best 64" spellcheck="false" v-model="ruleName">
           </div>
         </div>
-      </v-client-table>
-      <div class="info mb2" v-else>
-        <span class="error">User list empty.</span>      
-      </div>
-      <div class="field-group">
-        <label for="userName" class="label">
-          User Name:
-        </label>
-        <div class="field">
-          <input name="userName" id="userName" type="text" placeholder="l33tHax04" spellcheck="false" v-model="userName">
+        <div class="field-group">
+          <label for="ruleLocation" class="label">
+            Rule Location:
+          </label>
+          <div class="field">
+            <input name="ruleLocation" id="ruleLocation" type="text" placeholder="ex: /usr/share/hashcat/rules/best64.rule" spellcheck="false" @keyup.enter="addRule" v-model="ruleLocation">
+          </div>
         </div>
-      </div>
-      <div class="field-group">
-        <label for="userPassword" class="label">
-          Password:
-        </label>
-        <div class="field">
-          <input name="userPassword" id="userPassword" type="password" placeholder="god" spellcheck="false" @keyup.enter="addUser" v-model="userPassword">
-        </div>
-      </div>
-      <div class="field p1">
-        <label class="text-primary mr3">Role:</label>
-        <label class="label mr2" for="n00b">n00b</label>
-        <input id="n00b" value="n00b" type="radio" v-model="role" checked>
-        <label class="label mr2" for="admin">Administrator</label>
-        <input id="admin" value="admin" type="radio" v-model="role">
+
+        <button name="submit" type="submit" v-on:click="addRule" class="btn btn--primary align-center">
+          <span class="oi" data-glyph="plus" title="add" aria-hidden="true"></span>
+          Add Rule
+        </button>
       </div>
 
-      <div name="submit" type="submit" v-on:click="addUser" class="btn btn--primary align-center">
-        <span class="oi" data-glyph="plus" title="add" aria-hidden="true"></span>
-        Add User
+      <div class="flex1" style="padding: 0 2rem;min-width:300px;margin:0 auto">
+        <h2>Users</h2>
+        <v-client-table v-if="getUsers.length != 0" :data="getUsers" :columns="userCols" >
+          <div class="p2" slot="child_row" slot-scope="props">
+            <div>
+              <button class="btn btn--mini" @click="delUser(props.row.id)">Delete</button>
+            </div>
+          </div>
+        </v-client-table>
+        <div class="info mb2" v-else>
+          <span class="error">User list empty.</span>      
+        </div>
+        <div class="field-group">
+          <label for="userName" class="label">
+            User Name:
+          </label>
+          <div class="field">
+            <input name="userName" id="userName" type="text" placeholder="l33tHax04" spellcheck="false" v-model="userName">
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="userPassword" class="label">
+            Password:
+          </label>
+          <div class="field">
+            <input name="userPassword" id="userPassword" type="password" placeholder="god" spellcheck="false" @keyup.enter="addUser" v-model="userPassword">
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="label">
+            Role:
+          </div>
+          <div class="field">
+            <select id="role" name="dictionary" v-model="role">
+              <option value="n00b">User</option>
+              <option value="pi">Rotten Pi Agent</option>
+              <option value="agent">Hive Agent</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+        </div>       
+
+        <button name="submit" type="submit" v-on:click="addUser" class="btn btn--secondary align-center">
+          <span class="oi" data-glyph="person" title="add" aria-hidden="true"></span>
+          Add User
+        </button>
       </div>
     </div>
   </div>
@@ -151,7 +165,19 @@
         messages: [],
         dicCols: ['name', 'location', 'size'],
         ruleCols: ['name', 'location', 'size'],
-        userCols: ['email', 'role']
+        userCols: ['email', 'role'],
+        dicOps: {
+          columnsDisplay: {
+            location: 'desktop',
+            size: 'desktop'
+          }
+        },
+        ruleOpts: {
+          columnsDisplay: {
+            location: 'desktop',
+            size: 'desktop'
+          }
+        }
       }
     },
     computed: {
@@ -271,22 +297,3 @@
     }
   }
 </script>
-
-<style>
-  .VueTables__child-row-toggler {
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
-    display: block;
-    margin: auto;
-    text-align: center;
-  }
-
-  .VueTables__child-row-toggler--closed::before {
-    content: "+";
-  }
-
-  .VueTables__child-row-toggler--open::before {
-    content: "-";
-  }
-</style>

@@ -5,6 +5,10 @@ Vue.use(Vuex);
 
 const state = {
   running: '',
+  agentCmds: [],
+  agentLog: '',
+  agentLogs: [],
+  rotten: [],
   items: [],
   hashes: [],
   cracked: [],
@@ -73,6 +77,87 @@ let isEqual = function (value, other) {
 
 
 const actions = {
+  get_agent_log(context, params){
+    let _this = this
+    client.get_agent_log(params.ssid, params.file)
+      .then(function(response){
+        _this.commit('load_agent_log', response.data)
+      })
+      .catch(function(error) {
+        console.error('Error get agent log:', error)
+      })
+  },
+  get_agent_logs(context, ssid){
+    let _this = this
+    client.get_agent_logs(ssid)
+      .then(function(response){
+        _this.commit('load_agent_logs', response.data)
+      })
+      .catch(function(error) {
+        console.error('Error get agent logs:', error)
+      })
+  },
+
+  get_agent_commands(context){
+    let _this = this
+    client.get_rotten_commands()
+      .then(function(response){
+        _this.commit('load_rotten_commands', response.data)
+      })
+      .catch(function(error) {
+        console.error('Error get agent commands:', error)
+      })
+  },
+  insert_command(context, params) {
+    return client.insert_command(params.user, params.function, params.arguments)
+  },
+
+  delete_command(context, id) {
+    console.log('deleting command', id);
+    client.delete_command(id)
+      .then(function(response) {
+        console.log('deleted', response)
+      })
+      .catch(function(error) {
+        console.error('error in delete command', error)
+      })
+  },
+  delete_commands(context) {
+    console.log('deleting commands');
+    client.delete_commands()
+      .then(function(response) {
+        console.log('deleted', response)
+      })
+      .catch(function(error) {
+        console.error('error in delete commands', error)
+      })
+  },
+
+  delete_rotten_logs(context) {
+    console.log('deleting rotten logs');
+    client.delete_rotten_logs()
+      .then(function(response) {
+        console.log('deleted', response)
+      })
+      .catch(function(error) {
+        console.error('error in delete agent logs', error)
+      })
+  },
+
+
+  get_rotten(context, ssid){
+    let _this = this
+    client.get_rotten(ssid)
+      .then(function(response){
+        _this.commit('load_rotten_logs', response.data)
+      })
+      .catch(function(error) {
+        console.error('Error get RottenPi logs:', error)
+      })
+  },
+
+
+
   get_pending(context){
     let _this = this
     client.get_pending()
@@ -387,6 +472,10 @@ const mutations = {
   get_rules (context, data) { context.rules = data },
   get_users (context, data) { context.users = data },
   load_items (context, data) { context.items = data.pending },
+  load_rotten_commands (context, data) { context.agentCmds = data || ''; },
+  load_rotten_logs (context, data) { context.rotten = data || ''; },
+  load_agent_log (context, data) { context.agentLog = data || ''; },
+  load_agent_logs (context, data) { context.agentLogs = data || ''; },
   load_running (context, data) { context.running = data.running || ''; },
   load_cracked (context, data) { context.cracked = data.cracked || ''; },
   load_hashes (context, data) { context.hashes = data || ''; },
@@ -408,6 +497,10 @@ const mutations = {
 };
 
 const getters = {
+  getCommands(state) { if (state.agentCmds) { return state.agentCmds.reverse() } else return [] },
+  getRotten(state) { if (state.rotten) { return state.rotten.reverse() } else return [] },
+  getAgentLog(state) { return state.agentLog },
+  getAgentLogs(state) { return state.agentLogs },
   getMessages(state) { return state.messages },
   getToken (state){ return state.token },
   getHashes (state){ return state.hashes },

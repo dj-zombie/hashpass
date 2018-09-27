@@ -2,7 +2,7 @@
   <div>
     <div class="view-queue">
       <h2>Attack Queue</h2>
-      <div class="dflex">        
+      <div class="dflex" style="flex:1; align-items: center">        
         <button v-if="getPending[0]" class="btn btn--small" @click="clear">
           <span class="oi" data-glyph="ban" title="icon name" aria-hidden="true"></span>
           Clear
@@ -31,8 +31,8 @@
         </button>
       </div>
       <div class='dflex' v-bind:class="{ 'grow': getPending[0] }" style='overflow:hidden;flex-direction:column'>
-        <transition name='fade' class='view-queue'>
-          <div class="card" v-for="queue in getPending" v-bind:key="queue">
+        <transition-group name="queue" tag="queue">
+          <div class="card" v-for="queue in getPending" :key="showQueue">
             <div class="card__header">
               <span class="oi mr2 fr" data-glyph="wifi" title="icon name" aria-hidden="true"></span>
               🎯 {{queue.name}}
@@ -46,7 +46,7 @@
               <p v-if="queue.mask">Mask: <span>{{queue.mask}}</span></p>
             </div>
           </div>
-        </transition>
+        </transition-group>
       </div>
     </div>    
   </div>
@@ -61,12 +61,17 @@
     data: function() {
       return {
         isLoading: false,
+        showQueue: false
       }
     },
     computed: {
       getPending: function() { return store.getters.getPending; },
       getRunning: function() { return store.getters.getRunning; },
       progress: function() { return store.getters.getProgress },
+    },
+    mounted() {
+      store.dispatch('get_pending')
+      this.showQueue = !this.showQueue
     },
     methods: {
       clear: function() { store.dispatch('clear_running')  },
@@ -111,6 +116,16 @@
 </script>
 
 <style>
+  .faded-enter-active,
+  .faded-leave-active { 
+    /*transition: opacity 2.5s ease-out;*/
+    .view-queue & {
+      /*flex: 1;*/
+    }
+  }
+  .faded-enter,
+  .faded-leave-to { }
+
   .fade-enter-active,
   .fade-leave-active { 
     transition: opacity 2.5s ease-out;
@@ -129,5 +144,38 @@
   }
   .grow {
     flex: 1;
+  }
+
+
+  .view-queue queue {
+    max-width: 800px;
+    display: flex;
+    flex-flow: wrap;
+  }
+  .queue-enter-active,
+  .queue-leave-active,
+  .queue-move {
+    transition: 1000ms cubic-bezier(0.59, 0.12, 0.34, 0.95);
+    transition-property: opacity, transform;
+  }
+
+  .queue-enter {
+    opacity: 0;
+    transform: translateY(50px) scaleX(0.5);
+  }
+
+  .queue-enter-to {
+    opacity: 1;
+    transform: translateY(0) scaleX(1);
+  }
+
+  .queue-leave-active {
+    position: absolute;
+  }
+
+  .queue-leave-to {
+    opacity: 0;
+    transform: scaleY(0);
+    transform-origin: center top;
   }
 </style>

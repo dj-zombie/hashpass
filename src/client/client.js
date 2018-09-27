@@ -42,6 +42,22 @@ export default (function(){
         })
     },
 
+    get_agent_logs: function(ssid) { return axios.get('/agent/logs/' + ssid.replace(/[^0-9A-Za-z]/, '').replace(/\s/g, '') ) },
+    get_agent_log: function(ssid, log) { return axios.get('/agent/log/' + ssid.replace(/[^0-9A-Za-z]/, '').replace(/\s/g, '') + '/' + log) },    
+    get_rotten: function() { return axios.get('/api/agent/rotten') },
+    delete_rotten_logs: function() { return axios.delete('/api/agent/rotten') },
+    get_rotten_commands: function() { return axios.get('/api/agent/commands') },
+    agent_ssh: function() { return axios.get('/agent/ssh') },
+    delete_command: function(id) { return axios.delete('/api/agent/rotten/command/' + id) },
+    delete_commands: function() { return axios.delete('/api/agent/rotten/commands') },
+    insert_command: function(user, func, args) {
+      return axios.post('/api/agent/newcommand', {
+        user: user,
+        function: func,
+        arguments: args
+        })
+    },
+
     // Rules
     get_rules: function() { return axios.get('/api/rules') },
     delete_rule: function(id) { return axios.delete('/api/rule/' + id) },

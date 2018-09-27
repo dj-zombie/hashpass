@@ -58,7 +58,7 @@ class API
 
     options = {
       flags: active[:dictionary2].empty? && active[:rules].empty? && active[:mask].empty? ? '-a 0' : active[:rules].empty? && active[:mask].empty? ? '-a 1' : active[:rules].empty? ? '-a 3' : '-a 0',
-      flags2: "-w 3 --status --status-timer=1 --session #{ time_now } --potfile-disable",
+      flags2: "-w 3 -D 2 --status --status-timer=1 --session #{ time_now } --potfile-disable",
       rules: active[:rules].empty? ? '' : "-r #{active[:rules]}",
       hash:  !active[:hashstring].empty? ? "#{active[:hashstring]}" : "hashes/#{active[:hash]}",
       dics: active[:dictionary].empty? && active[:dictionary2].empty? ? "" : active[:dictionary2].empty? ? "#{active[:dictionary]}" : "#{active[:dictionary]} #{active[:dictionary2]}",
@@ -99,6 +99,18 @@ class API
       @filename = f[1][:filename]
       file = f[1][:tempfile]
       File.open("./hashes/#{@filename}", 'wb') do |ff|
+        ff.write(file.read)
+      end
+    end
+  end
+
+  def agent_upload(files, network)
+    return if files.nil? || files.empty?
+    `mkdir -p ./agent/#{ network }/log`
+    files.each do |f|
+      @filename = f[1][:filename]
+      file = f[1][:tempfile]      
+      File.open("./agent/#{ network}/log/#{@filename}", 'wb') do |ff|
         ff.write(file.read)
       end
     end
@@ -292,7 +304,7 @@ class API
     DB[:cracked].insert(hash: hash, password: password)
     @DB[:hashes].where(id: active[:hashid]).update(loot: password)
     @DB[:active].delete if @DB[:pending].count == 0
-    `espeak -a 200 -v english-us "Target Comprimised. Password found for #{ hash }. Authenticate with the password: #{ password }"`
+    IO.popen('espeak -a 200 -v english-us "Target Comprimised. Password found. Authenticate with the password: #{ password }"')
     @notifications.mail("0wn3d!", out[0])
   end
 end

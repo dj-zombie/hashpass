@@ -7,6 +7,9 @@
 # Hash files
 /hashes
 
+# Agent loot
+/agent
+
 # Compiled source
 *.com
 *.class

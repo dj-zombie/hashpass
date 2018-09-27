@@ -82,7 +82,7 @@
 
   .modal-header {
     padding: 1rem;
-    background: #2a2a2a;
+    /*background: #2a2a2a;*/
     max-height: 2rem;
   }
   .modal-footer {

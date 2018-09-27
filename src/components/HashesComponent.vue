@@ -3,19 +3,21 @@
     <div class="view-hashes">
       <div class="hashtable">           
         <v-client-table :data="getHashes" :columns="columns" :options="options" >
-          <div v-if="props.row.added" slot="added" slot-scope="props">
-            {{ props.row.added | moment("dddd, MMMM Do YYYY HH:mm") }}
+           <div v-if="props.row.added" slot="added" slot-scope="props">
+            {{ props.row.added | moment("ddd, MMM Do h:mma") }}
+            <!-- {{ props.row.added }} -->
           </div>
           <div slot="child_row" slot-scope="props" style='padding:1rem'>
             <div>
-              <button class="btn btn--mini" @click="deleteHash(props.row.id)">Delete</button>
-              <button class="btn btn--mini" @click="">Edit</button>
-              <button class="btn btn--mini" @click="">Queue</button>
-              <button class="btn btn--mini" @click="">Cut in line</button>
-              <button class="btn btn--mini" @click="rowclick(props.row.id)">History</button>
-            </div>            
-            <div class='mt3'>
-              <div>
+              <button class="btn btn--mini btn--secondary" @click="deleteHash(props.row.id)">Delete</button>
+              <button class="btn btn--mini btn--secondary" @click="rowclick(props.row.id)">History</button>
+              <button class="btn btn--mini btn--secondary" @click="fetchAgentLogs(props.row.name)">Get Agent Logs</button>
+              <div class="dflex mt3" style="flex-wrap: wrap">
+                <button v-for="file in getAgentLogs" class="btn btn--mini" @click="fetchAgentLog(props.row.name, file)">{{ file }}</button>
+              </div>
+            </div>
+            <div class="dflex mt3" style="flex-wrap:wrap">
+              <div class="flex1">
                 <div>
                   <div v-show='props.row.longitude'>
                     Longitude:
@@ -38,28 +40,38 @@
                     <span class='text-secondary'>{{ props.row.mode }}</span>
                   </div>
                   <div v-show='props.row.loot'>
-                    Loot 💰: 
+                    Lo💰t: 
                     <span class='text-secondary'>{{ props.row.loot }}</span>
                   </div>
                   <div v-show='props.row.added'>
                     Added on: 
                     <span class='text-secondary'>{{ props.row.added }}</span>
                   </div>
+                  <textarea v-show="getAgentLog" autocomplete="off" autocorrect="off" autocapitalize="off" wrap="off" spellcheck="false">{{ getAgentLog }}</textarea>
                 </div>
               </div>
             </div>
           </div>
           <input type="checkbox" name="checkboxes" slot="select" slot-scope="props" v-model="hashSelection" :value="props.row">                
         </v-client-table>
-        <div style='align-items: center'>
-          <label for="select" class="label">Select All:</label>
-          <input id="select" type="checkbox" v-model="selectall">
-          <button v-show="hashSelection.length" class="btn btn--primary btn--small" @click="toggleModal(hash)">Queue</button>
-          <button class="btn btn--primary btn--small" @click="showModal">Add</button>
+        <div style='align-items: center; text-align: center'>
+          <label for="select" class="label" style="float:left;margin-top:1rem">
+            Select All:
+          </label>
+          <input id="select" type="checkbox" style="float:left;margin-left:0.8rem;margin-top:1rem" v-model="selectall">
+          <button v-show="hashSelection.length" class="btn btn--secondary btn--small" @click="toggleModal(hash)">
+            👌 Queue
+          </button>
+          <button class="btn btn--primary btn--small" @click="showModal">
+            Import
+          </button>
+          <button class="btn btn--small fright"  @click="toggleMap">
+            Toggle Map
+          </button>
         </div>
       </div>
 
-      <div class="map">
+      <div v-show="showMap" :class="{ 'showmap' : showMap }" class="map">
         <l-map :zoom="zoom" :center="center" :min-zoom="1" :max-zoom="18">
           <l-control-layers :position="position"/>
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
@@ -70,9 +82,9 @@
         </l-map>
       </div>      
     </div>
-    <div class="p2">
-      <h2 class="text-center">
-        History
+    <div v-if="hashSelection.length" class="p2">
+      <h2 class="text-center no-transform">
+        {{ hashSelection[hashSelection.length-1].name }} History
       </h2>
       <v-client-table :data="showHistory" :columns="historyCols" :options="historyOps" >
 
@@ -81,7 +93,8 @@
         </div>
 
         <div v-if="props.row.started_on" slot="started_on" slot-scope="props">
-          {{ props.row.started_on | moment("dddd, MMMM Do YYYY HH:mm") }}
+          <!-- {{ props.row.started_on | moment("dddd, MMMM Do YYYY HH:mm") }} -->
+          {{ props.row.started_on }}
         </div>
       </v-client-table>      
     </div>
@@ -90,7 +103,7 @@
     <modal v-if="modalVisible" @close="toggleModal">
       <h3 slot="header">
         Queue Hash
-        <button class="btn btn--small modal-default-button mt0" @click="toggleModal">
+        <button class="btn btn--small modal-default-button mt0" @click="toggleModal" style="position:absolute;top:1rem;right:5px">
           Close
         </button>
       </h3>
@@ -99,8 +112,8 @@
 
     <modal v-if="modalHashVisible" @close="hideModal">
       <h3 slot="header">
-        Crack new hash
-        <button class="btn btn--small modal-default-button mt0" @click="hideModal">
+        Import hash to database
+        <button class="btn btn--small modal-default-button mt0" @click="hideModal" style="position:absolute;top:1rem;right:5px">
           Close
         </button>
       </h3>
@@ -127,24 +140,31 @@
     data: function() {
       return {
         modalVisible: false,
+        showMap: true,
         errors: [],
         hashSelection: [],
-        columns: ['select', 'name', 'mode', 'loot', 'added'],      
+        columns: ['select', 'name', 'mode', 'loot', 'hosts', 'added'],      
         options: {
           headings: {
-            select: '',
-            loot: 'Loot 💰',
+            select: '🎯',
+            loot: 'Lo💰t',
             added: 'Added'
           },
+          // sortingAlgorithm: function(data, column) {
+          //   alert('haaay! ' + column + data)
+          // },
           columnsDisplay: {
             added: 'desktop',
             mode: 'desktop',
+            hashes: 'desktop',
+            loot: 'desktop',
+            hosts: 'desktop'
           },
-          columnsClasses: { loot: 'text-primary', name: 'flex1 text-secondary', 
-            select: 'cboxes', added: 'added', mode: 'mode'
+          columnsClasses: { loot: 'text-primary text-center', name: 'flex1 text-secondary', 
+            select: 'cboxes text-center', added: 'added', mode: 'mode', hosts: 'text-center'
           },
           perPage: 10,
-          sortable: ['added', 'name', 'mode', 'loot'],
+          sortable: ['added', 'name', 'mode', 'hosts', 'loot'],
           filterable: ['name', 'mode'],
         },
         historyCols: ['restore', 'dictionary', 'dictionary2', 'rules', 'mask', 'started_on'],      
@@ -158,6 +178,9 @@
             started_on: 'Started'
           },
           columnsDisplay: {
+            dictionary2: 'desktop',
+            rules: 'desktop',
+            mask: 'desktop',            
             started_on: 'desktop'
           },
           columnsClasses: { restore: 'restore' },
@@ -189,6 +212,8 @@
       }
     },
     computed: { 
+      getAgentLog: function() { return store.getters.getAgentLog; },
+      getAgentLogs: function() { return store.getters.getAgentLogs; },
       getHashes: function() { return store.getters.getHashes; },
       selectall: {
         get: function () {
@@ -231,7 +256,10 @@
         store.dispatch('get_hashes')
       },
       rowclick: function(id) {
-        store.dispatch('get_history', id)
+        store.dispatch('get_history', id)        
+      },
+      toggleMap: function() {
+        this.showMap = !this.showMap
       },
       getMarkerContent: function(name, loot) {
         if (loot) {
@@ -241,10 +269,16 @@
           return name
         }
       },
+      fetchAgentLog: function(ssid, file) {
+        store.dispatch('get_agent_log', { ssid: ssid, file: file })
+      },
+      fetchAgentLogs: function(ssid) {
+        store.dispatch('get_agent_logs', ssid)
+      },
       resume: function(row) {
         console.log('resume', row)
         let _this = this;
-        store.dispatch('create_pending', {name: 'Resume', dictionary: row.dictionary, dictionary2: row.dictionary2, rules: row.rules, mask: row.mask, hash: row.started_on, hashmode: '', hashstring: '', hashid: row.hashid})
+        store.dispatch('create_pending', { name: 'Resume', dictionary: row.dictionary, dictionary2: row.dictionary2, rules: row.rules, mask: row.mask, hash: row.started_on, hashmode: '', hashstring: '', hashid: row.hashid })
             .then(function(){
               store.dispatch('get_pending');
               store.dispatch('get_running');
@@ -262,22 +296,6 @@
 </script>
 
 <style>
-.VueTables__child-row-toggler {
-  width: 16px;
-  height: 16px;
-  line-height: 16px;
-  display: block;
-  margin: auto;
-  text-align: center;
-}
-
-.VueTables__child-row-toggler--closed::before {
-  content: "+";
-}
-
-.VueTables__child-row-toggler--open::before {
-  content: "-";
-}
 .cboxes {
   width: 20px;
 }

@@ -4,7 +4,9 @@ import LoginPage from '../pages/LoginPage.vue'
 import MainPage from '../pages/MainPage.vue'
 import ErrorPage from '../pages/ErrorPage.vue'
 import QueuePage from '../pages/QueuePage.vue'
+import CrackedPage from '../pages/CrackedPage.vue'
 import HashesPage from '../pages/HashesPage.vue'
+import AgentsPage from '../pages/AgentsPage.vue'
 import SettingsPage from '../pages/SettingsPage.vue'
 
 Vue.use(Router);
@@ -31,6 +33,16 @@ export const router = new Router({
       path: '/queue',
       name: 'queue',
       component: QueuePage
+    },
+    {
+      path: '/cracked',
+      name: 'cracked',
+      component: CrackedPage
+    },
+    {
+      path: '/agents',
+      name: 'agents',
+      component: AgentsPage
     },
     {
       path: '/settings',

@@ -18,6 +18,7 @@ $iconic-font-path: '../../fonts/' !default;
   text-align: center;
 }
 
+.glyphicon,
 .oi[data-glyph] {
   &:before {
     position: relative;

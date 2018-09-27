@@ -80,7 +80,7 @@
         <input name="longitude" type="text" placeholder="longitude" v-model="getItem.longitude">
       </div>
     </div>
-    <div name="submit" type="submit" v-on:click="add_item" @keyup.enter="add_item" class="btn btn--primary">Submit</div>
+    <button name="submit" type="button" v-on:click="add_item" @keyup.enter="add_item" class="btn btn--primary">Submit</button>
   </form>
 </template>
 

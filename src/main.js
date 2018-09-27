@@ -12,6 +12,7 @@ import VueTables from 'vue-tables-2'
 import VueLayers from 'vuelayers'
 import L from 'leaflet';
 
+
 Vue.use(VueLayers)
 Vue.use(VueTyperPlugin)
 Vue.use(Vuex)

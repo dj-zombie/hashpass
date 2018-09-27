@@ -1,22 +1,33 @@
-# HashPass cracking WebApp & Server for ✨hashcat✨
+# Hashpass cracking WebApp & Server for ✨hashcat✨
 
-Background: This project was created because I had an idea how I can really start abusing WIFI while out in the field. Armed with my raspberry pi and Alfa card, I was capturing lots of wifi handshakes and needed a server to offload the cracking to. I also wanted the server to send me an SMS once it finds the password. Hashpass was born! Since then, this project has grown to aim to support all of hashcats features. I don't even use the hashcat command line anymore and if I need to then I'll just add a new feature to HashPass. If you need a feature implemented, please send me a message and I'll do my best. DISCLAIMER: Don't do anything naughty with this. Obey the law!!
+Complete wrapper that offers every feature of hashcat in an easy to use UI. From now on, there is no better way to interface with hashcat than Hashpass!
 
-See my other project, AgentOrange for using the new PMKID capture methodto to send hashes to the API. This new method is insane! 🙀 (Thanks ZerBea https://github.com/ZerBea/hcxtools and the haschat team for discovering this!!). I've put this script on a headless raspberry pi running gpsd and I'm able to send hashes along with GPS coordiantes to my server. Hashpass will start targed attacks on these networks by using some regex pattern matching on the SSID. For example, Netgear routers will get the WoNDeR wordlist, ATT whill get pskracker, fallbacks to something quick like rockyou, etc. Once the password is found I'll get an SMS message with SSID:pass 😏. To paint a picture: I'm driving around with this raspberry pi running and laughing as my phone is blowing up with text messages lol
+Dashboard:
+![screenshot from 2018-09-27 15-42-36](https://user-images.githubusercontent.com/42399304/46179460-3d937600-c270-11e8-98b1-b94d2c04ffe9.png)
+![screenshot from 2018-09-27 15-45-11](https://user-images.githubusercontent.com/42399304/46179464-3f5d3980-c270-11e8-8bae-f1257d4d9b89.png)
+![screenshot from 2018-09-27 15-48-05](https://user-images.githubusercontent.com/42399304/46179488-59971780-c270-11e8-82b4-87bba089b4f2.png)
+![screenshot from 2018-09-27 15-48-43](https://user-images.githubusercontent.com/42399304/46179492-5b60db00-c270-11e8-9210-1b99b0fb25ba.png)
+![screenshot from 2018-09-27 15-49-14](https://user-images.githubusercontent.com/42399304/46179495-5d2a9e80-c270-11e8-8365-8fbe1ae7f428.png)
+![screenshot from 2018-09-27 15-49-29](https://user-images.githubusercontent.com/42399304/46179505-6451ac80-c270-11e8-8774-947e22901ffe.png)
+![screenshot from 2018-09-27 15-50-57](https://user-images.githubusercontent.com/42399304/46179507-661b7000-c270-11e8-827d-b006fe46a9bc.png)
+![screenshot from 2018-09-27 15-54-26](https://user-images.githubusercontent.com/42399304/46179508-674c9d00-c270-11e8-8e03-524409d87aa7.png)
+![screenshot from 2018-09-27 15-55-02](https://user-images.githubusercontent.com/42399304/46179516-6ca9e780-c270-11e8-805e-b24609b5684f.png)
+![screenshot from 2018-09-27 16-10-13](https://user-images.githubusercontent.com/42399304/46179518-6ddb1480-c270-11e8-931b-4ba9c65b32b6.png)
+![screenshot from 2018-09-27 16-12-01](https://user-images.githubusercontent.com/42399304/46179519-6f0c4180-c270-11e8-929e-6f3652e92d06.png)
 
-![screenshot from 2018-08-23 20-20-36](https://user-images.githubusercontent.com/42399304/44563246-35489800-a712-11e8-8a3e-203188858029.png)
 
 Features
 ======================
 - Backend API server for sending hashes and controlling the application remotely. (Ruby/SQLite)
-- Custom designed frontend with a l33t hax0r theme similar to a terminal environment. (VueJS)
+- Custom designed frontend similar to a terminal environment. (VueJS)
 - Hash queing
-- Cracking progress is updated in real time. Hashcat output automatically gets fed into the frontend.
+- Cracking progress is updated in real time. Hashcat output automatically gets fed into the frontend. Websockets implementation in next release!
 - Database driven. Upload and manage hashes, dictionaries, rules with attack history and pause/resume
 - Auth with user account roles and management settings
 - Regular security hardning against common attacks such as XSS, SQL injection, click jacking and CSRF
 - SMS and Email notifcations
-- Maps integration for attaching lat/long to your hashes. Great for WIFI ;)
+- Maps integration for attaching lat/long to your hashes. Great for WIFI ;) New method of wardriving but also cracking the hash in real time! Anyone else doing this? 
+- Agents, two kinds: RottenPi & Hive. RottenPi is another project of mine that allows me to capture hashes via Responder/PMKID/Handshakes etc and queue them up for cracking with the hashpass API. Hive is my project for distributed password cracking which will allow a network of computers running hashcat to recieve a chunk of the keyspace.
 
 Installation
 ======================
@@ -31,7 +42,7 @@ Installation
 - Install Ruby ```$ brew install ruby```. For development I recommend [RVM](http://rvm.io/)
 
 ### Window$$? (aka Evil Corp)
-hahahahahahahahahahahahahahaaaa
+.........
 
 ### All platforms
 - ```$ git pull git@github.com:dj-zombie/hashpass.git```

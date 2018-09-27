@@ -13,11 +13,11 @@
     </div>
     <div class="field-group">
       <div class="label">
-        Attacking: ⛧ 
+        Attacking: 🎯 
       </div>
       <ul class="field" style="display: block">
         <li v-for="(hash, i) in hashes">
-          <span class="text-red">{{ hash.name }}</span> ⛧
+          <span class="text-red">{{ hash.name }}</span> 🎯
         </li>
       </ul>
     </div>
@@ -74,7 +74,7 @@
         <label class="label" for="email">Email</label>        
       </div>
     </div>
-    <div name="submit" type="submit" v-on:click="queue_item" @keyup.enter="queue_item" class="btn btn--primary align-center">Submit</div>
+    <button name="submit" type="button" v-on:click="queue_item" @keyup.enter="queue_item" class="btn btn--primary align-center">Submit</button>
   </form>
 </template>
 
