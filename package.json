@@ -1,12 +1,17 @@
 {
   "name": "hashpass",
   "description": "Server & Client for distributed password cracking using Hashcat.",
-  "version": "0.1",
-  "author": "Kris Toole <kristoole@gmail.com>",
+  "author": {
+    "name": "Kris Toole",
+    "email": "kristoole@gmail.com"
+  },
   "private": false,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "chromatic": "npx chromatic --project-token=c2ad41f754f8"
   },
   "dependencies": {
     "axios": "^0.16.2",
@@ -27,33 +32,45 @@
     "vue2-leaflet": "^1.0.2",
     "vue2-leaflet-markercluster": "^2.0.0",
     "vuelayers": "^0.10.12",
-    "vuex": "^3.0.0",
+    "vuex": "4.0.2",
     "vuex-router-sync": ""
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^6.5.9",
+    "@storybook/addon-essentials": "^6.5.9",
+    "@storybook/addon-interactions": "^6.5.9",
+    "@storybook/addon-links": "^6.5.9",
+    "@storybook/builder-webpack4": "^6.5.9",
+    "@storybook/manager-webpack4": "^6.5.9",
+    "@storybook/testing-library": "^0.0.13",
+    "@storybook/vue": "^6.5.9",
     "autoprefixer": "^7.2.6",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-component": "^1.1.1",
     "babel-preset-env": "^1.7.0",
+    "chromatic": "^6.7.0",
     "clean-webpack-plugin": "^0.1.19",
     "cross-env": "^5.1.6",
     "css-loader": "^0.28.11",
     "extract-text-webpack-plugin": "3.0.0",
     "file-loader": "^0.11.2",
     "html-webpack-plugin": "^2.30.1",
-    "node-sass": "^4.9.2",
-    "postcss": "^6.0.22",
+    "node-sass": "7.0.1",
+    "postcss": "8.4.14",
     "postcss-loader": "^2.1.5",
     "precss": "",
     "sanitize.css": "^5.0.0",
     "sass-loader": "",
     "style-loader": "",
     "url-loader": "",
-    "vue-loader": "^12.1.0",
+    "vue-loader": "15.9.5",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^3.12.0",
     "webpack-dev-server": "^2.11.2",
     "webpack-merge": "^4.1.2"
-  }
+  },
+  "version": "",
+  "readme": "ERROR: No README data found!",
+  "_id": "hashpass@"
 }
